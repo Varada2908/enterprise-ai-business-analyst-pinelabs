@@ -1,0 +1,86 @@
+== Real data: breaks passing z <= -5.0
+           dimension                   segment change_date  n_before  n_after  sr_before  sr_first_7d  sr_last_7d  z_score    status
+merchant x platform           M0137 / ANDROID  2026-10-12      1149      643     0.8869       0.6212      0.6198   -13.31   ongoing
+           merchant M0137 Zestora Online Mart  2026-10-12      2162     1104     0.8927       0.7233      0.7387   -11.87   ongoing
+       issuing_bank                       SBI  2026-09-13     12315    22192     0.8917       0.7563      0.8749    -6.33 recovered
+      bank x method                 SBI / UPI  2026-09-13      6278    12978     0.8724       0.6248      0.8598    -6.16 recovered
+   next strongest (suppressed): ECOMMERCE -4.98, ANDROID -4.86, UPI -4.58, YES -4.34 
+
+== Null data (40 time-shuffled copies): strongest (spurious) break per copy
+  run                top_segment           dimension change_date  n_before  n_after  sr_change  min_z  n_below_4  n_below_5
+   0       M0250 Banyan Threads            merchant  2026-09-01       382      724    -0.0661  -3.29          0          0
+   1                     TRAVEL   merchant_category  2026-10-02      3101     3114    -0.0330  -4.20          1          0
+   2                        SBI        issuing_bank  2026-09-13     12289    22172    -0.0143  -3.92          0          0
+   3          M0120 Mehr Pharma            merchant  2026-08-28       180      456    -0.1038  -3.89          0          0
+   4        M0242 Pankh Telecom            merchant  2026-09-08       173      333    -0.1164  -3.64          0          0
+   5           BOB / DEBIT_CARD       bank x method  2026-10-18       709      220    -0.0702  -3.70          0          0
+   6  M0137 Zestora Online Mart            merchant  2026-08-19      1054     5104    -0.0481  -4.28          3          0
+   7               POS_TERMINAL     device_platform  2026-10-05     27632    24277    -0.0108  -4.35          2          0
+   8       M0028 Neelkanth Mart            merchant  2026-10-07       261      223    -0.1226  -4.17          1          0
+   9       M0378 Orchid Threads            merchant  2026-09-16       205      299    -0.0914  -3.47          0          0
+  10               POS_TERMINAL     device_platform  2026-10-03     27307    26497    -0.0095  -3.89          0          0
+  11               POS_TERMINAL     device_platform  2026-10-05     27627    24266    -0.0098  -3.95          0          0
+  12                        YES        issuing_bank  2026-10-02      1146     1206    -0.0476  -3.83          0          0
+  13                M0137 / IOS merchant x platform  2026-10-14       383      168    -0.1069  -3.61          0          0
+  14                     (none)            merchant  2026-09-04       137      263    -0.1191  -3.65          0          0
+  15 M0174 Sahyadri Online Mart            merchant  2026-10-07       151      153    -0.1305  -4.22          1          0
+  16                RESTAURANTS   merchant_category  2026-09-20      8535    12799    -0.0165  -4.17          1          0
+  17                   PHARMACY   merchant_category  2026-09-11      3839     6625    -0.0221  -3.89          0          0
+  18         UNION / DEBIT_CARD       bank x method  2026-10-10       539      297    -0.0792  -4.50          1          0
+  19                       HDFC        issuing_bank  2026-10-05     10893     9413    -0.0179  -4.55          1          0
+  20                    ANDROID     device_platform  2026-10-05     19708    17767    -0.0125  -3.82          0          0
+  21                RESTAURANTS   merchant_category  2026-09-17      8566    13799    -0.0140  -3.59          0          0
+  22       M0018 / POS_TERMINAL merchant x platform  2026-09-14       215      355    -0.0904  -3.77          0          0
+  23            M0291 / ANDROID merchant x platform  2026-09-01       243      517    -0.1027  -4.43          1          0
+  24                RESTAURANTS   merchant_category  2026-10-05      8779     7979    -0.0175  -3.97          0          0
+  25               POS_TERMINAL     device_platform  2026-10-01     27188    28568    -0.0103  -4.33          3          0
+  26                UNION / UPI       bank x method  2026-09-19      1058     1987    -0.0480  -3.70          0          0
+  27            M0191 / ANDROID merchant x platform  2026-10-10       417      250    -0.0953  -3.96          0          0
+  28                  UTILITIES   merchant_category  2026-10-05      4665     4188    -0.0253  -3.76          0          0
+  29                  ECOMMERCE   merchant_category  2026-10-08     11922     8294    -0.0198  -4.42          1          0
+  30           M0205 Ira Kirana            merchant  2026-10-11       354      196    -0.0886  -3.46          0          0
+  31  M0137 Zestora Online Mart            merchant  2026-08-25      1478     4680    -0.0392  -3.96          0          0
+  32            M0045 / ANDROID merchant x platform  2026-08-27       511     1371    -0.0654  -3.88          0          0
+  33               POS_TERMINAL     device_platform  2026-09-17     26578    42452    -0.0086  -3.93          0          0
+  34                 MOBILE_WEB     device_platform  2026-10-04      5517     4918    -0.0224  -3.55          0          0
+  35            M0251 / ANDROID merchant x platform  2026-09-15       188      347    -0.0953  -3.52          0          0
+  36          M0120 Mehr Pharma            merchant  2026-10-08       186      168    -0.1254  -3.64          0          0
+  37                RESTAURANTS   merchant_category  2026-10-05      8784     7978    -0.0164  -3.69          0          0
+  38        M0139 Tulsi Telecom            merchant  2026-10-02       168      162    -0.1310  -3.96          0          0
+  39         UNION / DEBIT_CARD       bank x method  2026-10-19       501      149    -0.1025  -4.16          1          0
+
+Null strongest z: median -3.89, 5th pct -4.43, worst -4.55
+  share of null copies with a spurious break at z <= -4: 30%
+  share of null copies with a spurious break at z <= -4.5: 5%
+  share of null copies with a spurious break at z <= -5: 0%
+  top spurious hit volume after change: median 1679, min 149
+
+== Breaks injected on 2026-10-12 into a null copy (the only real signal)
+              segment  attempts_after  injected_fail_prob  merchant_rank  merchant_z  found  rank change_date  sr_change      z  reported          top_segment  top_z
+         M0027 / IOS              48                0.30            NaN         NaN  False   NaN        None        NaN    NaN     False    YES / CREDIT_CARD  -3.95
+     M0280 / ANDROID             109                0.30            2.0       -4.49   True   1.0  2026-10-12    -0.3166  -6.40      True      M0280 / ANDROID  -6.40
+     M0280 / ANDROID             109                0.10           13.0       -2.85   True  37.0  2026-09-18    -0.0779  -2.52     False    YES / CREDIT_CARD  -3.95
+M0172 / POS_TERMINAL             185                0.30            2.0       -7.04   True   1.0  2026-10-12    -0.2984  -8.72      True M0172 / POS_TERMINAL  -8.72
+M0172 / POS_TERMINAL             185                0.10            NaN         NaN   True  35.0  2026-10-01    -0.0632  -2.61     False    YES / CREDIT_CARD  -4.01
+     M0045 / ANDROID             342                0.30            2.0       -9.53   True   1.0  2026-10-12    -0.3208 -11.45      True      M0045 / ANDROID -11.45
+     M0045 / ANDROID             342                0.10            3.0       -4.12   True   1.0  2026-10-12    -0.1320  -5.36      True      M0045 / ANDROID  -5.36
+     M0045 / ANDROID             342                0.05            NaN         NaN   True  13.0  2026-10-12    -0.0672  -2.90     False    YES / CREDIT_CARD  -3.95 
+
+== Recovered incident (SBI UPI outage, week of 2026-09-14), data cut at different dates
+      as_of     top_segment top_change_date  top_z  sbi_upi_rank sbi_upi_change_date  sbi_upi_sr_before  sbi_upi_sr_after  sbi_upi_z  sbi_upi_sr_first_7d  sbi_upi_sr_last_7d sbi_upi_status  reported_breaks
+2026-09-21       SBI / UPI      2026-09-14 -23.43             1          2026-09-14             0.8706            0.6261     -23.43               0.6261              0.6261        ongoing                6
+2026-09-28       SBI / UPI      2026-09-14 -15.34             1          2026-09-14             0.8706            0.7480     -15.34               0.6261              0.8724      recovered                4
+2026-10-05       SBI / UPI      2026-09-13 -11.32             1          2026-09-13             0.8724            0.7948     -11.32               0.6248              0.8854      recovered                3
+2026-10-26 M0137 / ANDROID      2026-10-12 -13.31             4          2026-09-13             0.8724            0.8386      -6.16               0.6248              0.8598      recovered                4
+
+== Checks
+[PASS] real data: only planted incidents reported  (M0137 / ANDROID, M0137 Zestora Online Mart, SBI, SBI / UPI)
+[PASS] real data: M0137 / ANDROID first, 2026-10-12, ongoing  (M0137 / ANDROID 2026-10-12 ongoing)
+[PASS] null data: family-wise false-positive rate at z <= -5.0 <= 5%  (0% of 40 copies)
+[PASS] injected: ~30% failure jump on >=100-attempt segment reported with correct date  (3/3)
+[PASS] injected: segment below the 100-attempt floor is not reported  (0/1 reported)
+[PASS] recovered: SBI / UPI 'ongoing' while the outage is the latest week  (ongoing)
+[PASS] recovered: SBI / UPI 'recovered' once the outage has ended  (2026-09-28: recovered, 2026-10-05: recovered, 2026-10-26: recovered)
+[PASS] recovered: incident size kept (first-7-day SR within 1pp of the outage-week 62.61%)  (0.6261, 0.6261, 0.6248, 0.6248)
+
+8/8 checks passed (151s)

@@ -1,0 +1,471 @@
+dataset: Synthetic payments analytics dataset (fictional merchants, synthetic customers)
+conventions:
+  timezone: All timestamps are IST (Asia/Kolkata), stored without offset.
+  currency: All amounts are INR.
+  week: 'Weeks run Monday-Sunday: date_trunc(''week'', created_at). The extract covers 12 full weeks.'
+  date_range: 2026-08-03 to 2026-10-25 (transactions); extract taken 2026-10-26 10:00 IST.
+  default_time_window: If a question does not specify a period, state the assumption explicitly (e.g. 'last full week' = the
+    latest Monday-Sunday week in the data).
+tables:
+  transactions:
+    description: Payment attempt ledger. One row per payment attempt (a retry is a new attempt).
+    grain: one row per transaction_id (attempt)
+    primary_key: transaction_id
+    columns:
+    - name: transaction_id
+      type: VARCHAR
+      nullable: false
+      description: Unique identifier of the payment attempt.
+      allowed_values_or_notes: Expected unique; see validity rule R1
+    - name: order_id
+      type: VARCHAR
+      nullable: false
+      description: Checkout / order the attempt belongs to. All retries of one checkout share it.
+    - name: attempt_number
+      type: INTEGER
+      nullable: false
+      description: 1 for the first attempt of an order, 2+ for retries.
+      allowed_values_or_notes: 1-3
+    - name: parent_transaction_id
+      type: VARCHAR
+      nullable: true
+      description: The attempt this one retries. NULL when attempt_number = 1.
+      allowed_values_or_notes: FK -> transactions.transaction_id
+    - name: customer_id
+      type: VARCHAR
+      nullable: false
+      description: Pseudonymous payer identifier.
+    - name: merchant_id
+      type: VARCHAR
+      nullable: true
+      description: Merchant receiving the payment.
+      allowed_values_or_notes: FK -> merchants.merchant_id
+    - name: payment_method_id
+      type: VARCHAR
+      nullable: false
+      description: Payment instrument used.
+      allowed_values_or_notes: FK -> payment_methods.payment_method_id
+    - name: bank_id
+      type: VARCHAR
+      nullable: true
+      description: Issuing bank of the payer's instrument. NULL by design for WALLET payments.
+      allowed_values_or_notes: FK -> banks.bank_id
+    - name: card_network
+      type: VARCHAR
+      nullable: true
+      description: Card scheme for card payments; NULL otherwise.
+      allowed_values_or_notes: VISA, MASTERCARD, RUPAY
+    - name: channel
+      type: VARCHAR
+      nullable: false
+      description: Where the payment was initiated.
+      allowed_values_or_notes: ONLINE, POS
+    - name: device_platform
+      type: VARCHAR
+      nullable: false
+      description: Customer device / acceptance surface.
+      allowed_values_or_notes: ANDROID, IOS, MOBILE_WEB, DESKTOP_WEB (ONLINE); POS_TERMINAL (POS)
+    - name: amount
+      type: DECIMAL(14,2)
+      nullable: true
+      description: Attempted amount in INR.
+      allowed_values_or_notes: Valid range 0 < amount <= 1,000,000; UPI capped at 100,000
+    - name: currency
+      type: VARCHAR
+      nullable: false
+      description: Currency code.
+      allowed_values_or_notes: INR
+    - name: status
+      type: VARCHAR
+      nullable: false
+      description: Final status of the attempt.
+      allowed_values_or_notes: SUCCESS, FAILED, USER_CANCELLED, PENDING
+    - name: failure_code
+      type: VARCHAR
+      nullable: true
+      description: Reason for failure. Populated only when status = FAILED.
+      allowed_values_or_notes: FK -> failure_codes.failure_code
+    - name: response_time_ms
+      type: INTEGER
+      nullable: true
+      description: Milliseconds from initiation to final status. NULL while PENDING. For USER_CANCELLED it is time until abandonment.
+    - name: created_at
+      type: TIMESTAMP
+      nullable: false
+      description: Attempt initiation time, IST (Asia/Kolkata), no offset stored.
+      allowed_values_or_notes: 2026-08-03 to 2026-10-25
+    - name: updated_at
+      type: TIMESTAMP
+      nullable: false
+      description: Time of the last status change of this record, IST.
+      allowed_values_or_notes: '>= created_at'
+  merchants:
+    description: 'Merchant master: profile, commercial terms and settlement terms.'
+    grain: one row per merchant
+    primary_key: merchant_id
+    columns:
+    - name: merchant_id
+      type: VARCHAR
+      nullable: false
+      description: Merchant identifier.
+    - name: merchant_name
+      type: VARCHAR
+      nullable: false
+      description: Trading name (fictional).
+    - name: category
+      type: VARCHAR
+      nullable: false
+      description: Business category.
+      allowed_values_or_notes: GROCERY, RESTAURANTS, FUEL, APPAREL, ELECTRONICS, PHARMACY, TRAVEL, HOTELS, EDUCATION, UTILITIES,
+        ECOMMERCE, ENTERTAINMENT, JEWELLERY
+    - name: mcc
+      type: VARCHAR
+      nullable: false
+      description: ISO 18245 merchant category code.
+    - name: business_model
+      type: VARCHAR
+      nullable: false
+      description: Acceptance model.
+      allowed_values_or_notes: ONLINE, OFFLINE, OMNICHANNEL
+    - name: city
+      type: VARCHAR
+      nullable: false
+      description: Registered city.
+    - name: state
+      type: VARCHAR
+      nullable: false
+      description: Registered state.
+    - name: region
+      type: VARCHAR
+      nullable: false
+      description: Sales region.
+      allowed_values_or_notes: NORTH, SOUTH, EAST, WEST, CENTRAL
+    - name: city_tier
+      type: INTEGER
+      nullable: false
+      description: 1 = metro, 2 = tier-2 city.
+      allowed_values_or_notes: 1, 2
+    - name: merchant_size
+      type: VARCHAR
+      nullable: false
+      description: Segment by processed volume.
+      allowed_values_or_notes: ENTERPRISE, MID_MARKET, SMALL
+    - name: onboarding_date
+      type: DATE
+      nullable: false
+      description: Date the merchant went live. No transactions exist before it.
+    - name: pricing_plan
+      type: VARCHAR
+      nullable: false
+      description: Commercial plan.
+      allowed_values_or_notes: ENTERPRISE, GROWTH, STANDARD
+    - name: mdr_discount_pct
+      type: INTEGER
+      nullable: false
+      description: Contracted discount (%) on the payment method's standard MDR.
+      allowed_values_or_notes: 0-30
+    - name: settlement_cycle_days
+      type: INTEGER
+      nullable: false
+      description: 'Payout cycle: settlement_date = transaction_date + N days (Sunday rolls to Monday).'
+      allowed_values_or_notes: 1, 2
+    - name: settlement_bank_id
+      type: VARCHAR
+      nullable: false
+      description: Bank holding the merchant's payout account.
+      allowed_values_or_notes: FK -> banks.bank_id
+    - name: kyc_status
+      type: VARCHAR
+      nullable: false
+      description: KYC status.
+      allowed_values_or_notes: VERIFIED
+    - name: is_active
+      type: BOOLEAN
+      nullable: false
+      description: Merchant currently active.
+  banks:
+    description: Issuing / settlement banks.
+    grain: one row per bank
+    primary_key: bank_id
+    columns:
+    - name: bank_id
+      type: VARCHAR
+      nullable: false
+      description: Bank identifier.
+    - name: bank_name
+      type: VARCHAR
+      nullable: false
+      description: Bank name.
+    - name: short_name
+      type: VARCHAR
+      nullable: false
+      description: Common abbreviation (e.g. SBI).
+    - name: bank_type
+      type: VARCHAR
+      nullable: false
+      description: Ownership / licence type.
+      allowed_values_or_notes: PUBLIC_SECTOR, PRIVATE_SECTOR, SMALL_FINANCE, PAYMENTS_BANK
+    - name: ifsc_prefix
+      type: VARCHAR
+      nullable: false
+      description: First four characters of the bank's IFSC codes.
+    - name: supports_upi
+      type: BOOLEAN
+      nullable: false
+      description: Issues UPI-linked accounts.
+    - name: supports_credit_card
+      type: BOOLEAN
+      nullable: false
+      description: Issues credit cards.
+    - name: supports_debit_card
+      type: BOOLEAN
+      nullable: false
+      description: Issues debit cards.
+    - name: supports_net_banking
+      type: BOOLEAN
+      nullable: false
+      description: Offers net banking.
+    - name: is_active
+      type: BOOLEAN
+      nullable: false
+      description: Bank active.
+  payment_methods:
+    description: Payment instruments and their standard merchant discount rate (MDR).
+    grain: one row per payment method
+    primary_key: payment_method_id
+    columns:
+    - name: payment_method_id
+      type: VARCHAR
+      nullable: false
+      description: Method identifier used in transactions.
+    - name: method_code
+      type: VARCHAR
+      nullable: false
+      description: Stable method code - use this in analysis.
+      allowed_values_or_notes: UPI, CREDIT_CARD, DEBIT_CARD, NET_BANKING, WALLET
+    - name: method_name
+      type: VARCHAR
+      nullable: false
+      description: Display name.
+    - name: method_family
+      type: VARCHAR
+      nullable: false
+      description: Grouping of methods.
+      allowed_values_or_notes: UPI, CARD, BANK_TRANSFER, WALLET
+    - name: mdr_rate_pct
+      type: DECIMAL(5,2)
+      nullable: false
+      description: Standard MDR charged to merchants, % of amount, before merchant discount.
+    - name: requires_issuing_bank
+      type: BOOLEAN
+      nullable: false
+      description: Whether transactions on this method carry a bank_id.
+    - name: supported_channels
+      type: VARCHAR
+      nullable: false
+      description: Channels where the method is accepted (comma separated).
+  failure_codes:
+    description: Reference list of failure reasons.
+    grain: one row per failure code
+    primary_key: failure_code
+    columns:
+    - name: failure_code
+      type: VARCHAR
+      nullable: false
+      description: Failure reason code.
+      allowed_values_or_notes: INCORRECT_PIN, AUTH_FAILED, INSUFFICIENT_FUNDS, CARD_EXPIRED, INVALID_VPA, LIMIT_EXCEEDED,
+        BANK_DECLINED, BANK_TIMEOUT, ISSUER_UNAVAILABLE, NETWORK_ERROR, GATEWAY_ERROR, GATEWAY_TIMEOUT, RISK_DECLINED
+    - name: description
+      type: VARCHAR
+      nullable: false
+      description: Meaning of the code.
+    - name: failure_category
+      type: VARCHAR
+      nullable: false
+      description: Who/what caused the failure.
+      allowed_values_or_notes: CUSTOMER, BANK, NETWORK, GATEWAY, RISK
+    - name: is_retriable
+      type: BOOLEAN
+      nullable: false
+      description: Whether an immediate retry can reasonably succeed.
+    - name: responsible_party
+      type: VARCHAR
+      nullable: false
+      description: Party accountable for the failure.
+      allowed_values_or_notes: CUSTOMER, ISSUING_BANK, NETWORK, PAYMENT_GATEWAY, RISK_ENGINE
+  settlements:
+    description: Merchant payout batches. One batch per merchant per transaction date covering that day's successful transactions.
+    grain: one row per (merchant_id, transaction_date)
+    primary_key: settlement_id
+    columns:
+    - name: settlement_id
+      type: VARCHAR
+      nullable: false
+      description: Payout batch identifier.
+    - name: merchant_id
+      type: VARCHAR
+      nullable: false
+      description: Merchant being paid.
+      allowed_values_or_notes: FK -> merchants.merchant_id
+    - name: transaction_date
+      type: DATE
+      nullable: false
+      description: Business date of the transactions covered (DATE(created_at)).
+    - name: settlement_date
+      type: DATE
+      nullable: false
+      description: Scheduled payout date.
+    - name: transaction_count
+      type: INTEGER
+      nullable: false
+      description: Number of successful transactions in the batch, as recorded by the settlement system.
+    - name: gross_amount
+      type: DECIMAL(14,2)
+      nullable: false
+      description: Sum of transaction amounts, as recorded by the settlement system.
+    - name: fee_amount
+      type: DECIMAL(14,2)
+      nullable: false
+      description: MDR fees deducted, as recorded by the settlement system.
+    - name: tax_amount
+      type: DECIMAL(14,2)
+      nullable: false
+      description: GST (18%) on fees, as recorded by the settlement system.
+    - name: net_amount
+      type: DECIMAL(14,2)
+      nullable: false
+      description: Amount payable to the merchant = gross - fee - tax.
+    - name: status
+      type: VARCHAR
+      nullable: false
+      description: Payout status.
+      allowed_values_or_notes: SETTLED, PENDING, FAILED
+    - name: status_reason
+      type: VARCHAR
+      nullable: true
+      description: Reason for PENDING / FAILED.
+      allowed_values_or_notes: AWAITING_PAYOUT_WINDOW, RISK_REVIEW_HOLD, BENEFICIARY_ACCOUNT_INVALID, BENEFICIARY_BANK_UNAVAILABLE,
+        TRANSFER_LIMIT_EXCEEDED
+    - name: settled_at
+      type: TIMESTAMP
+      nullable: true
+      description: Time funds were credited. NULL unless SETTLED.
+    - name: utr_number
+      type: VARCHAR
+      nullable: true
+      description: Bank transfer reference. NULL unless SETTLED.
+    - name: settlement_bank_id
+      type: VARCHAR
+      nullable: false
+      description: Bank receiving the payout.
+      allowed_values_or_notes: FK -> banks.bank_id
+relationships:
+- transactions.merchant_id -> merchants.merchant_id (many-to-one)
+- transactions.bank_id -> banks.bank_id (many-to-one; NULL for WALLET)
+- transactions.payment_method_id -> payment_methods.payment_method_id (many-to-one)
+- transactions.failure_code -> failure_codes.failure_code (many-to-one)
+- transactions.parent_transaction_id -> transactions.transaction_id (retry chain)
+- transactions.order_id groups attempts of one checkout
+- settlements.merchant_id -> merchants.merchant_id (many-to-one)
+- settlements (merchant_id, transaction_date) <- transactions (merchant_id, DATE(created_at)) for status = SUCCESS
+- merchants.settlement_bank_id / settlements.settlement_bank_id -> banks.bank_id
+validity_rules:
+- id: R1
+  rule: transaction_id is expected to be unique. If several rows share one, keep only the row with the latest updated_at (the
+    most recent state of the attempt).
+- id: R2
+  rule: A valid status is one of SUCCESS, FAILED, USER_CANCELLED, PENDING (exact, upper case). Rows with any other value are
+    excluded from metrics and reported as data-quality issues.
+- id: R3
+  rule: A valid amount satisfies 0 < amount <= 1,000,000. Rows with NULL or out-of-range amounts are excluded from metrics.
+- id: R4
+  rule: Rows passing R1-R3 are 'valid transactions'. All metrics below are computed on valid transactions.
+- id: R5
+  rule: merchant_id / bank_id that are NULL (non-wallet) or not present in the dimension table are data-quality issues. Such
+    rows still count in company-wide metrics but cannot be attributed to a merchant / bank; report how many were unattributable.
+- id: R6
+  rule: bank_id IS NULL for WALLET payments is expected, not a defect.
+- id: R7
+  rule: A FAILED row should have a failure_code; SUCCESS, USER_CANCELLED and PENDING rows should not.
+- id: R8
+  rule: Settlement reconciliation tolerance is INR 1.00 per batch (per-transaction rounding).
+metrics:
+- name: terminal_attempts
+  definition: Valid attempts that reached a final outcome.
+  sql: count_if(status IN ('SUCCESS','FAILED','USER_CANCELLED'))
+  notes: PENDING attempts are unresolved and excluded from rate denominators.
+- name: success_rate
+  definition: 'Canonical success rate: successful attempts / terminal attempts. This is the default meaning of ''success rate''
+    / ''SR''.'
+  sql: count_if(status = 'SUCCESS')::DOUBLE / NULLIF(count_if(status IN ('SUCCESS','FAILED','USER_CANCELLED')), 0)
+  notes: 'Attempt-level: each retry counts as an attempt.'
+- name: technical_success_rate
+  definition: 'Success rate excluding customer abandonment: SUCCESS / (SUCCESS + FAILED).'
+  sql: count_if(status = 'SUCCESS')::DOUBLE / NULLIF(count_if(status IN ('SUCCESS','FAILED')), 0)
+  notes: Use only when explicitly asked; always name which denominator was used.
+- name: failure_rate
+  definition: FAILED / terminal attempts.
+  sql: count_if(status = 'FAILED')::DOUBLE / NULLIF(count_if(status IN ('SUCCESS','FAILED','USER_CANCELLED')), 0)
+  notes: null
+- name: user_cancellation_rate
+  definition: USER_CANCELLED / terminal attempts.
+  sql: count_if(status = 'USER_CANCELLED')::DOUBLE / NULLIF(count_if(status IN ('SUCCESS','FAILED','USER_CANCELLED')), 0)
+  notes: null
+- name: tpv
+  definition: 'Total Processed Value: sum of amount over SUCCESS valid transactions, INR.'
+  sql: SUM(amount) FILTER (WHERE status = 'SUCCESS')
+  notes: Never include failed, cancelled or pending attempts.
+- name: success_count
+  definition: Number of SUCCESS valid transactions.
+  sql: count_if(status = 'SUCCESS')
+  notes: null
+- name: average_ticket_size
+  definition: TPV / success_count.
+  sql: SUM(amount) FILTER (WHERE status = 'SUCCESS') / NULLIF(count_if(status = 'SUCCESS'), 0)
+  notes: null
+- name: order_conversion_rate
+  definition: Share of orders (order_id) with at least one SUCCESS attempt, among orders whose attempts are all resolved.
+  sql: AVG(order_succeeded) over orders, where order_succeeded = bool_or(status = 'SUCCESS') per order_id
+  notes: Customer-level view of success; higher than success_rate because retries recover failures.
+- name: retry_rate
+  definition: Share of terminal attempts with attempt_number > 1.
+  sql: count_if(attempt_number > 1 AND status IN ('SUCCESS','FAILED','USER_CANCELLED'))::DOUBLE / NULLIF(count_if(status IN
+    ('SUCCESS','FAILED','USER_CANCELLED')), 0)
+  notes: null
+- name: payment_method_share
+  definition: Terminal attempts on a method / all terminal attempts in the same slice.
+  sql: count_if(method_code = 'UPI' AND status IN (...))::DOUBLE / count_if(status IN (...))
+  notes: Mix metric; changes in mix move overall SR even when per-method SR is flat.
+- name: failure_reason_share
+  definition: FAILED attempts with a given failure_code / FAILED attempts with a non-NULL failure_code.
+  sql: count(*) FILTER (WHERE failure_code = X) / count(*) FILTER (WHERE status='FAILED' AND failure_code IS NOT NULL)
+  notes: Report how many FAILED rows had no failure_code.
+- name: response_time_p50 / p95
+  definition: Median / 95th percentile of response_time_ms over SUCCESS and FAILED attempts.
+  sql: quantile_cont(response_time_ms, 0.5) FILTER (WHERE status IN ('SUCCESS','FAILED'))
+  notes: USER_CANCELLED times measure abandonment, not system latency, and are excluded.
+- name: expected_fee (per transaction)
+  definition: Fee the merchant should be charged on a SUCCESS transaction.
+  sql: ROUND(amount * mdr_rate_pct * (100 - mdr_discount_pct) * 0.0001, 2)
+  notes: mdr_rate_pct from payment_methods, mdr_discount_pct from merchants. Exact decimal arithmetic, rounded half-up to
+    paise per transaction, then summed.
+- name: expected_tax (per transaction)
+  definition: GST on the expected fee.
+  sql: ROUND(expected_fee * 0.18, 2)
+  notes: null
+- name: expected_net_settlement
+  definition: 'Per (merchant, transaction_date): SUM(amount) - SUM(expected_fee) - SUM(expected_tax) over SUCCESS valid transactions.'
+  sql: SUM(amount) - SUM(expected_fee) - SUM(expected_tax)
+  notes: Compare with settlements.net_amount.
+- name: settlement_gap
+  definition: settlements.net_amount - expected_net_settlement. Negative = merchant under-paid.
+  sql: s.net_amount - e.expected_net
+  notes: '|gap| <= 1.00 INR is rounding noise.'
+- name: aged_pending_settlement
+  definition: PENDING batch whose settlement_date is at least 2 days before the extract date.
+  sql: status = 'PENDING' AND settlement_date <= DATE '2026-10-26' - INTERVAL 2 DAY
+  notes: null
+- name: merchant_onboarding_cohort
+  definition: Calendar quarter of merchants.onboarding_date, e.g. 2026-Q3.
+  sql: strftime(onboarding_date, '%Y') || '-Q' || quarter(onboarding_date)
+  notes: null

@@ -1,0 +1,1112 @@
+[
+ {
+  "question": "Why did the overall success rate fall in the week of 2026-10-05 compared with the previous week?",
+  "success": true,
+  "answer": "The overall success rate fell from 90.69% on 16,602 terminal attempts in the baseline week (2026-09-28 to 2026-10-04) to 89.27% on 24,111 terminal attempts in the current week (2026-10-05 to 2026-10-11), a drop of -1.42 pp. This decline was primarily driven by a payment method mix shift towards UPI, whose share of total terminal attempts jumped from 44.93% (7,460 attempts) to 74.38% (17,933 attempts) while its internal success rate remained flat (88.08% baseline vs 88.05% current). Concurrently, higher-performing methods saw their attempt shares shrink: Credit Card share dropped from 19.90% (SR 94.56%) to 9.29% (SR 94.99%) and Debit Card share dropped from 20.64% (SR 92.99%) to 9.51% (SR 93.25%). The driver of this sudden volume shift towards lower-baseline UPI on 2026-10-05 is hypothesized to be a promotional campaign, checkout routing change, or merchant onboarding event.",
+  "findings": [
+   {
+    "statement": "Overall terminal attempts increased from 16,602 in the baseline week (2026-09-28 to 2026-10-04) to 24,111 in the current week (2026-10-05 to 2026-10-11), while the overall success rate decreased from 90.69% to 89.27% (-1.42 pp).",
+    "evidence": [
+     "Q3"
+    ],
+    "numbers_verified": [
+     "16,602",
+     "24,111",
+     "90.69%",
+     "89.27%",
+     "-1.42 pp"
+    ],
+    "numbers_unverified": [],
+    "claim_notes": []
+   },
+   {
+    "statement": "UPI's share of total terminal attempts jumped from 44.93% (7,460 attempts) in the baseline week to 74.38% (17,933 attempts) in the week of 2026-10-05, while UPI's internal success rate remained flat (88.08% baseline vs 88.05% current).",
+    "evidence": [
+     "Q5"
+    ],
+    "numbers_verified": [
+     "44.93%",
+     "7,460",
+     "74.38%",
+     "17,933",
+     "88.08%",
+     "88.05%"
+    ],
+    "numbers_unverified": [],
+    "claim_notes": []
+   },
+   {
+    "statement": "Higher-performing payment methods saw their combined share shrink: Credit Card attempt share dropped from 19.90% (SR 94.56%) to 9.29% (SR 94.99%), and Debit Card share dropped from 20.64% (SR 92.99%) to 9.51% (SR 93.25%).",
+    "evidence": [
+     "Q5"
+    ],
+    "numbers_verified": [
+     "19.90%",
+     "94.56%",
+     "9.29%",
+     "94.99%",
+     "20.64%",
+     "92.99%",
+     "9.51%",
+     "93.25%"
+    ],
+    "numbers_unverified": [],
+    "claim_notes": []
+   },
+   {
+    "statement": "The mix shift occurred as a sharp step-change on Monday, 2026-10-05, when daily UPI attempt share rose from 46.89% on 2026-10-04 to 74.56% on 2026-10-05 and overall daily SR dropped from 90.88% to 89.86%.",
+    "evidence": [
+     "Q6"
+    ],
+    "numbers_verified": [
+     "46.89%",
+     "74.56%",
+     "90.88%",
+     "89.86%"
+    ],
+    "numbers_unverified": [],
+    "claim_notes": []
+   },
+   {
+    "statement": "Absolutes of customer-side failure codes increased alongside volume expansion: INCORRECT_PIN failures increased from 128 to 324 (+196) and INSUFFICIENT_FUNDS increased from 226 to 397 (+171).",
+    "evidence": [
+     "Q4"
+    ],
+    "numbers_verified": [
+     "128",
+     "324",
+     "196",
+     "226",
+     "397",
+     "171"
+    ],
+    "numbers_unverified": [],
+    "claim_notes": []
+   }
+  ],
+  "hypotheses": [
+   {
+    "statement": "The sudden surge in UPI transaction share was caused by a promotional campaign, product checkout change, or merchant onboarding favoring UPI instruments starting October 5, 2026.",
+    "rationale": "Daily volume step-changed on 2026-10-05 from ~2,300-2,700 attempts/day to 3,300+ attempts/day exclusively driven by UPI growth while card attempt volumes contracted.",
+    "supporting_evidence": [
+     "Q5",
+     "Q6"
+    ],
+    "how_to_verify": "Check product launch logs, checkout UI change histories, or marketing campaign start dates on 2026-10-05.",
+    "demoted_from_finding": false
+   }
+  ],
+  "caveats": [
+   "In the week of 2026-10-05 to 2026-10-11, 127 FAILED transactions (up from 58 in the baseline week) were missing a failure_code.",
+   "46 valid transactions in the current week (40 in baseline) had an unattributable merchant_id."
+  ],
+  "suggested_follow_ups": [
+   "Which specific merchants or checkout integrations drove the sudden 140%+ increase in UPI attempt volume starting 2026-10-05?",
+   "Why did Credit and Debit Card transaction counts decrease in absolute terms during the week of 2026-10-05?",
+   "Can checkout routing or default payment method selection be optimized to encourage higher-converting payment methods?"
+  ],
+  "answer_numbers_verified": [
+   "90.69%",
+   "16,602",
+   "89.27%",
+   "24,111",
+   "-1.42 pp",
+   "44.93%",
+   "7,460",
+   "74.38%",
+   "17,933",
+   "88.08%",
+   "88.05%",
+   "19.90%",
+   "94.56%",
+   "9.29%",
+   "94.99%",
+   "20.64%",
+   "92.99%",
+   "9.51%",
+   "93.25%"
+  ],
+  "answer_numbers_unverified": [],
+  "answer_issues": [],
+  "answer_revised": true,
+  "original_answer": "The overall success rate fell by 1.42 percentage points from 90.69% (15,057 successes on 16,602 terminal attempts) in the week of 2026-09-28 to 89.27% (21,525 successes on 24,111 terminal attempts) in the week of 2026-10-05. This drop was primarily driven by a dramatic payment method mix shift towards UPI, whose share of total attempts surged from 44.93% to 74.38% starting on 2026-10-05. Because UPI has an inherently lower success rate (88.05%) compared to high-performing instruments like Credit Cards (94.99%) and Debit Cards (93.25%), this structural shift diluted the overall success rate even though individual payment method success rates remained virtually unchanged.",
+  "queries": [
+   {
+    "id": "Q1",
+    "round": 1,
+    "purpose": "[driver scan] segments ranked by impact on SR change (2026-09-28..2026-10-04 vs 2026-10-05..2026-10-11)",
+    "sql": "WITH valid_txn AS (\n    SELECT * EXCLUDE (_rn)\n    FROM (\n        SELECT t.*, pm.method_code,\n               CAST(t.created_at AS DATE) AS txn_date,\n               row_number() OVER (PARTITION BY t.transaction_id ORDER BY t.updated_at DESC) AS _rn\n        FROM transactions t\n        JOIN payment_methods pm USING (payment_method_id)\n    )\n    WHERE _rn = 1\n      AND status IN ('SUCCESS', 'FAILED', 'USER_CANCELLED', 'PENDING')\n      AND amount > 0 AND amount <= 1000000\n),\nbase AS (\n    SELECT v.*, b.short_name AS bank, m.merchant_name, m.category AS merchant_category,\n           CASE WHEN v.txn_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN 'cur'\n                WHEN v.txn_date BETWEEN DATE '2026-09-28' AND DATE '2026-10-04' THEN 'base' END AS period\n    FROM valid_txn v\n    LEFT JOIN banks b ON v.bank_id = b.bank_id\n    LEFT JOIN merchants m ON v.merchant_id = m.merchant_id\n    WHERE v.status IN ('SUCCESS', 'FAILED', 'USER_CANCELLED') \n),\nseg AS (\n    SELECT 'merchant' AS dimension, coalesce(merchant_id, '(none)') || coalesce(' ' || merchant_name, '') AS segment, period, count(*) AS n, count_if(status = 'SUCCESS') AS s FROM base WHERE period IS NOT NULL GROUP BY ALL\n    UNION ALL\n    SELECT 'device_platform' AS dimension, device_platform AS segment, period, count(*) AS n, count_if(status = 'SUCCESS') AS s FROM base WHERE period IS NOT NULL GROUP BY ALL\n    UNION ALL\n    SELECT 'merchant x platform' AS dimension, coalesce(merchant_id, '(none)') || ' / ' || device_platform AS segment, period, count(*) AS n, count_if(status = 'SUCCESS') AS s FROM base WHERE period IS NOT NULL GROUP BY ALL\n    UNION ALL\n    SELECT 'payment_method' AS dimension, method_code AS segment, period, count(*) AS n, count_if(status = 'SUCCESS') AS s FROM base WHERE period IS NOT NULL GROUP BY ALL\n    UNION ALL\n    SELECT 'issuing_bank' AS dimension, coalesce(bank, '(none)') AS segment, period, count(*) AS n, count_if(status = 'SUCCESS') AS s FROM base WHERE period IS NOT NULL GROUP BY ALL\n    UNION ALL\n    SELECT 'bank x method' AS dimension, coalesce(bank, '(none)') || ' / ' || method_code AS segment, period, count(*) AS n, count_if(status = 'SUCCESS') AS s FROM base WHERE period IS NOT NULL GROUP BY ALL\n    UNION ALL\n    SELECT 'merchant_category' AS dimension, coalesce(merchant_category, '(none)') AS segment, period, count(*) AS n, count_if(status = 'SUCCESS') AS s FROM base WHERE period IS NOT NULL GROUP BY ALL\n    UNION ALL\n    SELECT 'channel' AS dimension, channel AS segment, period, count(*) AS n, count_if(status = 'SUCCESS') AS s FROM base WHERE period IS NOT NULL GROUP BY ALL\n),\npiv AS (\n    SELECT dimension, segment,\n           coalesce(sum(n) FILTER (WHERE period = 'base'), 0) AS n_base,\n           coalesce(sum(s) FILTER (WHERE period = 'base'), 0) AS s_base,\n           coalesce(sum(n) FILTER (WHERE period = 'cur'), 0) AS n_cur,\n           coalesce(sum(s) FILTER (WHERE period = 'cur'), 0) AS s_cur\n    FROM seg GROUP BY dimension, segment\n),\ntot AS (\n    SELECT count_if(period = 'cur') AS total_cur,\n           (count_if(period = 'cur' AND status = 'SUCCESS')::DOUBLE / nullif(count_if(period = 'cur'), 0)\n            - count_if(period = 'base' AND status = 'SUCCESS')::DOUBLE / nullif(count_if(period = 'base'), 0)) * 100\n           AS overall_change_pp\n    FROM base\n),\nscored AS (\n    SELECT dimension, segment, n_base, round(s_base::DOUBLE / n_base, 4) AS sr_baseline,\n           n_cur, round(s_cur::DOUBLE / n_cur, 4) AS sr_current,\n           round(s_cur::DOUBLE / n_cur - s_base::DOUBLE / n_base, 4) AS sr_change,\n           round(n_cur::DOUBLE / total_cur * (s_cur::DOUBLE / n_cur - s_base::DOUBLE / n_base) * 100, 3) AS impact_on_overall_sr_pp,\n           round((s_base::DOUBLE / n_base - s_cur::DOUBLE / n_cur) * n_cur) AS excess_unsuccessful_attempts,\n           round(overall_change_pp, 3) AS overall_sr_change_pp,\n           -- the segment's rate effect as a share of the overall SR change (mix shifts are not included,\n           -- so shares within a dimension need not add up to 1)\n           round(CASE WHEN abs(overall_change_pp) >= 0.01 THEN\n                 n_cur::DOUBLE / total_cur * (s_cur::DOUBLE / n_cur - s_base::DOUBLE / n_base) * 100 / overall_change_pp\n                 END, 4) AS share_of_overall_change\n    FROM piv CROSS JOIN tot\n    WHERE n_base >= 100 AND n_cur >= 100\n)\nSELECT * FROM scored\nQUALIFY row_number() OVER (PARTITION BY dimension ORDER BY impact_on_overall_sr_pp ASC) <= 4\nORDER BY impact_on_overall_sr_pp ASC\nLIMIT 40",
+    "status": "ok",
+    "error": null,
+    "columns": [
+     "dimension",
+     "segment",
+     "n_base",
+     "sr_baseline",
+     "n_cur",
+     "sr_current",
+     "sr_change",
+     "impact_on_overall_sr_pp",
+     "excess_unsuccessful_attempts",
+     "overall_sr_change_pp",
+     "share_of_overall_change"
+    ],
+    "rows": [
+     [
+      "channel",
+      "ONLINE",
+      9339,
+      0.8997,
+      13798,
+      0.8825,
+      -0.0171,
+      -0.981,
+      237.0,
+      -1.419,
+      0.6915
+     ],
+     [
+      "device_platform",
+      "ANDROID",
+      5133,
+      0.9001,
+      7578,
+      0.8807,
+      -0.0194,
+      -0.608,
+      147.0,
+      -1.419,
+      0.4285
+     ],
+     [
+      "device_platform",
+      "POS_TERMINAL",
+      7263,
+      0.9163,
+      10313,
+      0.9064,
+      -0.0099,
+      -0.422,
+      102.0,
+      -1.419,
+      0.2971
+     ],
+     [
+      "channel",
+      "POS",
+      7263,
+      0.9163,
+      10313,
+      0.9064,
+      -0.0099,
+      -0.422,
+      102.0,
+      -1.419,
+      0.2971
+     ],
+     [
+      "issuing_bank",
+      "SBI",
+      3310,
+      0.9048,
+      5277,
+      0.889,
+      -0.0159,
+      -0.348,
+      84.0,
+      -1.419,
+      0.2449
+     ],
+     [
+      "merchant_category",
+      "ECOMMERCE",
+      2890,
+      0.9007,
+      4328,
+      0.8835,
+      -0.0171,
+      -0.308,
+      74.0,
+      -1.419,
+      0.2168
+     ],
+     [
+      "issuing_bank",
+      "HDFC",
+      2828,
+      0.9176,
+      4004,
+      0.8994,
+      -0.0183,
+      -0.303,
+      73.0,
+      -1.419,
+      0.2136
+     ],
+     [
+      "device_platform",
+      "IOS",
+      1632,
+      0.9093,
+      2501,
+      0.888,
+      -0.0213,
+      -0.221,
+      53.0,
+      -1.419,
+      0.1554
+     ],
+     [
+      "merchant_category",
+      "RESTAURANTS",
+      2278,
+      0.917,
+      3401,
+      0.9021,
+      -0.0149,
+      -0.211,
+      51.0,
+      -1.419,
+      0.1485
+     ],
+     [
+      "merchant_category",
+      "TRAVEL",
+      805,
+      0.9106,
+      1142,
+      0.873,
+      -0.0375,
+      -0.178,
+      43.0,
+      -1.419,
+      0.1252
+     ],
+     [
+      "issuing_bank",
+      "ICICI",
+      2345,
+      0.919,
+      3309,
+      0.9087,
+      -0.0102,
+      -0.141,
+      34.0,
+      -1.419,
+      0.099
+     ],
+     [
+      "bank x method",
+      "HDFC / UPI",
+      1255,
+      0.894,
+      2917,
+      0.8824,
+      -0.0116,
+      -0.14,
+      34.0,
+      -1.419,
+      0.099
+     ],
+     [
+      "merchant_category",
+      "HOTELS",
+      432,
+      0.9421,
+      559,
+      0.8837,
+      -0.0584,
+      -0.135,
+      33.0,
+      -1.419,
+      0.0954
+     ],
+     [
+      "device_platform",
+      "DESKTOP_WEB",
+      1191,
+      0.9085,
+      1694,
+      0.8914,
+      -0.0171,
+      -0.12,
+      29.0,
+      -1.419,
+      0.0846
+     ],
+     [
+      "issuing_bank",
+      "KOTAK",
+      985,
+      0.9096,
+      1445,
+      0.8907,
+      -0.019,
+      -0.114,
+      27.0,
+      -1.419,
+      0.0802
+     ],
+     [
+      "bank x method",
+      "SBI / UPI",
+      1719,
+      0.8854,
+      4181,
+      0.8799,
+      -0.0055,
+      -0.095,
+      23.0,
+      -1.419,
+      0.0668
+     ],
+     [
+      "merchant",
+      "M0137 Zestora Online Mart",
+      497,
+      0.9115,
+      669,
+      0.8819,
+      -0.0296,
+      -0.082,
+      20.0,
+      -1.419,
+      0.0578
+     ],
+     [
+      "merchant",
+      "M0125 Mehr Supermarket",
+      210,
+      0.9143,
+      338,
+      0.8639,
+      -0.0504,
+      -0.071,
+      17.0,
+      -1.419,
+      0.0498
+     ],
+     [
+      "merchant x platform",
+      "M0182 / ANDROID",
+      172,
+      0.9128,
+      243,
+      0.8477,
+      -0.0651,
+      -0.066,
+      16.0,
+      -1.419,
+      0.0462
+     ],
+     [
+      "merchant x platform",
+      "M0137 / ANDROID",
+      269,
+      0.9145,
+      353,
+      0.8725,
+      -0.042,
+      -0.061,
+      15.0,
+      -1.419,
+      0.0433
+     ],
+     [
+      "merchant",
+      "M0152 Lotus Online Mart",
+      166,
+      0.9398,
+      222,
+      0.8739,
+      -0.0659,
+      -0.061,
+      15.0,
+      -1.419,
+      0.0427
+     ],
+     [
+      "merchant",
+      "M0191 Vrinda Bazaar",
+      174,
+      0.931,
+      300,
+      0.8867,
+      -0.0444,
+      -0.055,
+      13.0,
+      -1.419,
+      0.0389
+     ],
+     [
+      "merchant x platform",
+      "M0345 / ANDROID",
+      114,
+      0.9386,
+      173,
+      0.8613,
+      -0.0773,
+      -0.055,
+      13.0,
+      -1.419,
+      0.0391
+     ],
+     [
+      "merchant x platform",
+      "M0125 / ANDROID",
+      111,
+      0.9099,
+      187,
+      0.8449,
+      -0.065,
+      -0.05,
+      12.0,
+      -1.419,
+      0.0355
+     ],
+     [
+      "bank x method",
+      "ICICI / UPI",
+      1055,
+      0.8986,
+      2437,
+      0.8945,
+      -0.004,
+      -0.041,
+      10.0,
+      -1.419,
+      0.0287
+     ],
+     [
+      "payment_method",
+      "NET_BANKING",
+      1151,
+      0.8619,
+      805,
+      0.8497,
+      -0.0122,
+      -0.041,
+      10.0,
+      -1.419,
+      0.0286
+     ],
+     [
+      "bank x method",
+      "SBI / NET_BANKING",
+      270,
+      0.8741,
+      194,
+      0.8299,
+      -0.0442,
+      -0.036,
+      9.0,
+      -1.419,
+      0.025
+     ],
+     [
+      "payment_method",
+      "UPI",
+      7444,
+      0.8808,
+      17889,
+      0.8805,
+      -0.0004,
+      -0.027,
+      6.0,
+      -1.419,
+      0.0187
+     ],
+     [
+      "payment_method",
+      "WALLET",
+      1291,
+      0.938,
+      898,
+      0.9321,
+      -0.006,
+      -0.022,
+      5.0,
+      -1.419,
+      0.0156
+     ],
+     [
+      "payment_method",
+      "DEBIT_CARD",
+      3424,
+      0.9299,
+      2283,
+      0.9325,
+      0.0026,
+      0.025,
+      -6.0,
+      -1.419,
+      -0.0176
+     ]
+    ],
+    "row_count": 30,
+    "truncated": false,
+    "elapsed_ms": 1104
+   },
+   {
+    "id": "Q2",
+    "round": 1,
+    "purpose": "[driver scan] failure-reason shift (2026-09-28..2026-10-04 vs 2026-10-05..2026-10-11)",
+    "sql": "WITH valid_txn AS (\n    SELECT * EXCLUDE (_rn)\n    FROM (\n        SELECT t.*, pm.method_code,\n               CAST(t.created_at AS DATE) AS txn_date,\n               row_number() OVER (PARTITION BY t.transaction_id ORDER BY t.updated_at DESC) AS _rn\n        FROM transactions t\n        JOIN payment_methods pm USING (payment_method_id)\n    )\n    WHERE _rn = 1\n      AND status IN ('SUCCESS', 'FAILED', 'USER_CANCELLED', 'PENDING')\n      AND amount > 0 AND amount <= 1000000\n),\nbase AS (\n    SELECT v.*, b.short_name AS bank, m.merchant_name, m.category AS merchant_category,\n           CASE WHEN v.txn_date BETWEEN DATE '2026-10-05' AND DATE '2026-10-11' THEN 'cur'\n                WHEN v.txn_date BETWEEN DATE '2026-09-28' AND DATE '2026-10-04' THEN 'base' END AS period\n    FROM valid_txn v\n    LEFT JOIN banks b ON v.bank_id = b.bank_id\n    LEFT JOIN merchants m ON v.merchant_id = m.merchant_id\n    WHERE v.status IN ('SUCCESS', 'FAILED', 'USER_CANCELLED') \n),\nfc AS (\n    SELECT coalesce(failure_code, '(missing)') AS failure_code,\n           count_if(period = 'base' AND status = 'FAILED') AS failed_base,\n           count_if(period = 'cur' AND status = 'FAILED') AS failed_cur\n    FROM base WHERE period IS NOT NULL GROUP BY 1\n),\ntot AS (SELECT count_if(period = 'base') AS n_base, count_if(period = 'cur') AS n_cur FROM base),\nseg_fail AS (\n    SELECT coalesce(failure_code, '(missing)') AS failure_code,\n           coalesce(merchant_id, '(none)') || ' / ' || device_platform AS segment, count(*) AS n\n    FROM base WHERE period = 'cur' AND status = 'FAILED' GROUP BY 1, 2\n),\ntop_seg AS (\n    SELECT * FROM seg_fail\n    QUALIFY row_number() OVER (PARTITION BY failure_code ORDER BY n DESC, segment) = 1\n)\nSELECT fc.failure_code, failed_base, round(failed_base::DOUBLE / n_base * 100, 3) AS pct_of_attempts_base,\n       failed_cur, round(failed_cur::DOUBLE / n_cur * 100, 3) AS pct_of_attempts_cur,\n       round((failed_cur::DOUBLE / n_cur - failed_base::DOUBLE / n_base) * 100, 3) AS change_pp,\n       top_seg.segment AS top_merchant_platform_cur, top_seg.n AS top_segment_failed_cur\nFROM fc CROSS JOIN tot LEFT JOIN top_seg ON fc.failure_code = top_seg.failure_code\nORDER BY change_pp DESC",
+    "status": "ok",
+    "error": null,
+    "columns": [
+     "failure_code",
+     "failed_base",
+     "pct_of_attempts_base",
+     "failed_cur",
+     "pct_of_attempts_cur",
+     "change_pp",
+     "top_merchant_platform_cur",
+     "top_segment_failed_cur"
+    ],
+    "rows": [
+     [
+      "INCORRECT_PIN",
+      128,
+      0.771,
+      324,
+      1.344,
+      0.573,
+      "M0175 / POS_TERMINAL",
+      7
+     ],
+     [
+      "INSUFFICIENT_FUNDS",
+      226,
+      1.361,
+      397,
+      1.647,
+      0.285,
+      "M0137 / ANDROID",
+      13
+     ],
+     [
+      "INVALID_VPA",
+      40,
+      0.241,
+      102,
+      0.423,
+      0.182,
+      "M0003 / ANDROID",
+      4
+     ],
+     [
+      "(missing)",
+      58,
+      0.349,
+      127,
+      0.527,
+      0.177,
+      "M0031 / POS_TERMINAL",
+      4
+     ],
+     [
+      "NETWORK_ERROR",
+      57,
+      0.343,
+      118,
+      0.489,
+      0.146,
+      "M0175 / POS_TERMINAL",
+      4
+     ],
+     [
+      "LIMIT_EXCEEDED",
+      86,
+      0.518,
+      156,
+      0.647,
+      0.129,
+      "M0280 / IOS",
+      4
+     ],
+     [
+      "BANK_TIMEOUT",
+      127,
+      0.765,
+      215,
+      0.892,
+      0.127,
+      "M0293 / ANDROID",
+      7
+     ],
+     [
+      "BANK_DECLINED",
+      118,
+      0.711,
+      187,
+      0.776,
+      0.065,
+      "M0003 / ANDROID",
+      5
+     ],
+     [
+      "RISK_DECLINED",
+      54,
+      0.325,
+      92,
+      0.382,
+      0.056,
+      "M0248 / POS_TERMINAL",
+      3
+     ],
+     [
+      "ISSUER_UNAVAILABLE",
+      59,
+      0.355,
+      93,
+      0.386,
+      0.03,
+      "M0032 / POS_TERMINAL",
+      3
+     ],
+     [
+      "CARD_EXPIRED",
+      11,
+      0.066,
+      7,
+      0.029,
+      -0.037,
+      "M0003 / ANDROID",
+      1
+     ],
+     [
+      "GATEWAY_ERROR",
+      80,
+      0.482,
+      105,
+      0.435,
+      -0.046,
+      "M0248 / POS_TERMINAL",
+      5
+     ],
+     [
+      "AUTH_FAILED",
+      103,
+      0.62,
+      78,
+      0.324,
+      -0.297,
+      "M0032 / POS_TERMINAL",
+      3
+     ]
+    ],
+    "row_count": 13,
+    "truncated": false,
+    "elapsed_ms": 682
+   },
+   {
+    "id": "Q3",
+    "round": 1,
+    "purpose": "Headline metrics comparison between the baseline week (2026-09-28 to 2026-10-04) and current week (2026-10-05 to 2026-10-11)",
+    "sql": "WITH valid_txn AS (SELECT * EXCLUDE (_rn) FROM (SELECT t.*, pm.method_code, CAST(t.created_at AS DATE) AS txn_date, row_number() OVER (PARTITION BY t.transaction_id ORDER BY t.updated_at DESC) AS _rn FROM transactions t JOIN payment_methods pm USING (payment_method_id)) WHERE _rn = 1 AND status IN ('SUCCESS', 'FAILED', 'USER_CANCELLED', 'PENDING') AND amount > 0 AND amount <= 1000000) SELECT CASE WHEN txn_date BETWEEN '2026-09-28' AND '2026-10-04' THEN '2026-09-28 to 2026-10-04' WHEN txn_date BETWEEN '2026-10-05' AND '2026-10-11' THEN '2026-10-05 to 2026-10-11' END AS period, COUNT(*) AS total_valid_txns, COUNT_IF(status IN ('SUCCESS','FAILED','USER_CANCELLED')) AS terminal_attempts, COUNT_IF(status = 'SUCCESS') AS success_count, COUNT_IF(status = 'FAILED') AS failed_count, COUNT_IF(status = 'USER_CANCELLED') AS cancelled_count, ROUND(COUNT_IF(status = 'SUCCESS')::DOUBLE / NULLIF(COUNT_IF(status IN ('SUCCESS','FAILED','USER_CANCELLED')), 0), 4) AS success_rate, ROUND(COUNT_IF(status = 'SUCCESS')::DOUBLE / NULLIF(COUNT_IF(status IN ('SUCCESS','FAILED')), 0), 4) AS tech_success_rate, ROUND(COUNT_IF(status = 'FAILED')::DOUBLE / NULLIF(COUNT_IF(status IN ('SUCCESS','FAILED','USER_CANCELLED')), 0), 4) AS failure_rate, ROUND(COUNT_IF(status = 'USER_CANCELLED')::DOUBLE / NULLIF(COUNT_IF(status IN ('SUCCESS','FAILED','USER_CANCELLED')), 0), 4) AS user_cancelled_rate, SUM(amount) FILTER (WHERE status = 'SUCCESS') AS tpv FROM valid_txn WHERE txn_date BETWEEN '2026-09-28' AND '2026-10-11' GROUP BY 1 ORDER BY 1",
+    "status": "ok",
+    "error": null,
+    "columns": [
+     "period",
+     "total_valid_txns",
+     "terminal_attempts",
+     "success_count",
+     "failed_count",
+     "cancelled_count",
+     "success_rate",
+     "tech_success_rate",
+     "failure_rate",
+     "user_cancelled_rate",
+     "tpv"
+    ],
+    "rows": [
+     [
+      "2026-09-28 to 2026-10-04",
+      16640,
+      16602,
+      15057,
+      1147,
+      398,
+      0.9069,
+      0.9292,
+      0.0691,
+      0.024,
+      "63644687.20"
+     ],
+     [
+      "2026-10-05 to 2026-10-11",
+      24174,
+      24111,
+      21525,
+      2001,
+      585,
+      0.8927,
+      0.9149,
+      0.083,
+      0.0243,
+      "77184027.01"
+     ]
+    ],
+    "row_count": 2,
+    "truncated": false,
+    "elapsed_ms": 233
+   },
+   {
+    "id": "Q4",
+    "round": 1,
+    "purpose": "Failure code comparison between baseline and current week",
+    "sql": "WITH valid_txn AS (SELECT * EXCLUDE (_rn) FROM (SELECT t.*, pm.method_code, CAST(t.created_at AS DATE) AS txn_date, row_number() OVER (PARTITION BY t.transaction_id ORDER BY t.updated_at DESC) AS _rn FROM transactions t JOIN payment_methods pm USING (payment_method_id)) WHERE _rn = 1 AND status IN ('SUCCESS', 'FAILED', 'USER_CANCELLED', 'PENDING') AND amount > 0 AND amount <= 1000000) SELECT failure_code, COUNT_IF(txn_date BETWEEN '2026-09-28' AND '2026-10-04') AS failed_prev_week, COUNT_IF(txn_date BETWEEN '2026-10-05' AND '2026-10-11') AS failed_curr_week, COUNT_IF(txn_date BETWEEN '2026-10-05' AND '2026-10-11') - COUNT_IF(txn_date BETWEEN '2026-09-28' AND '2026-10-04') AS diff FROM valid_txn WHERE status = 'FAILED' AND txn_date BETWEEN '2026-09-28' AND '2026-10-11' GROUP BY 1 ORDER BY failed_curr_week DESC",
+    "status": "ok",
+    "error": null,
+    "columns": [
+     "failure_code",
+     "failed_prev_week",
+     "failed_curr_week",
+     "diff"
+    ],
+    "rows": [
+     [
+      "INSUFFICIENT_FUNDS",
+      226,
+      397,
+      171
+     ],
+     [
+      "INCORRECT_PIN",
+      128,
+      324,
+      196
+     ],
+     [
+      "BANK_TIMEOUT",
+      127,
+      215,
+      88
+     ],
+     [
+      "BANK_DECLINED",
+      118,
+      187,
+      69
+     ],
+     [
+      "LIMIT_EXCEEDED",
+      86,
+      156,
+      70
+     ],
+     [
+      null,
+      58,
+      127,
+      69
+     ],
+     [
+      "NETWORK_ERROR",
+      57,
+      118,
+      61
+     ],
+     [
+      "GATEWAY_ERROR",
+      80,
+      105,
+      25
+     ],
+     [
+      "INVALID_VPA",
+      40,
+      102,
+      62
+     ],
+     [
+      "ISSUER_UNAVAILABLE",
+      59,
+      93,
+      34
+     ],
+     [
+      "RISK_DECLINED",
+      54,
+      92,
+      38
+     ],
+     [
+      "AUTH_FAILED",
+      103,
+      78,
+      -25
+     ],
+     [
+      "CARD_EXPIRED",
+      11,
+      7,
+      -4
+     ]
+    ],
+    "row_count": 13,
+    "truncated": false,
+    "elapsed_ms": 209
+   },
+   {
+    "id": "Q5",
+    "round": 2,
+    "purpose": "Payment method share and SR comparison between baseline and current week to evaluate mix shift effect",
+    "sql": "WITH valid_txn AS (SELECT * EXCLUDE (_rn) FROM (SELECT t.*, pm.method_code, CAST(t.created_at AS DATE) AS txn_date, row_number() OVER (PARTITION BY t.transaction_id ORDER BY t.updated_at DESC) AS _rn FROM transactions t JOIN payment_methods pm USING (payment_method_id)) WHERE _rn = 1 AND status IN ('SUCCESS', 'FAILED', 'USER_CANCELLED', 'PENDING') AND amount > 0 AND amount <= 1000000) SELECT method_code, COUNT_IF(txn_date BETWEEN '2026-09-28' AND '2026-10-04') AS base_attempts, ROUND(COUNT_IF(txn_date BETWEEN '2026-09-28' AND '2026-10-04')::DOUBLE / 16602, 4) AS base_share, ROUND(COUNT_IF(txn_date BETWEEN '2026-09-28' AND '2026-10-04' AND status = 'SUCCESS')::DOUBLE / NULLIF(COUNT_IF(txn_date BETWEEN '2026-09-28' AND '2026-10-04' AND status IN ('SUCCESS','FAILED','USER_CANCELLED')), 0), 4) AS base_sr, COUNT_IF(txn_date BETWEEN '2026-10-05' AND '2026-10-11') AS cur_attempts, ROUND(COUNT_IF(txn_date BETWEEN '2026-10-05' AND '2026-10-11')::DOUBLE / 24111, 4) AS cur_share, ROUND(COUNT_IF(txn_date BETWEEN '2026-10-05' AND '2026-10-11' AND status = 'SUCCESS')::DOUBLE / NULLIF(COUNT_IF(txn_date BETWEEN '2026-10-05' AND '2026-10-11' AND status IN ('SUCCESS','FAILED','USER_CANCELLED')), 0), 4) AS cur_sr FROM valid_txn WHERE txn_date BETWEEN '2026-09-28' AND '2026-10-11' GROUP BY method_code ORDER BY cur_attempts DESC",
+    "status": "ok",
+    "error": null,
+    "columns": [
+     "method_code",
+     "base_attempts",
+     "base_share",
+     "base_sr",
+     "cur_attempts",
+     "cur_share",
+     "cur_sr"
+    ],
+    "rows": [
+     [
+      "UPI",
+      7460,
+      0.4493,
+      0.8808,
+      17933,
+      0.7438,
+      0.8805
+     ],
+     [
+      "DEBIT_CARD",
+      3426,
+      0.2064,
+      0.9299,
+      2292,
+      0.0951,
+      0.9325
+     ],
+     [
+      "CREDIT_CARD",
+      3304,
+      0.199,
+      0.9456,
+      2240,
+      0.0929,
+      0.9499
+     ],
+     [
+      "WALLET",
+      1296,
+      0.0781,
+      0.938,
+      899,
+      0.0373,
+      0.9321
+     ],
+     [
+      "NET_BANKING",
+      1154,
+      0.0695,
+      0.8619,
+      810,
+      0.0336,
+      0.8497
+     ]
+    ],
+    "row_count": 5,
+    "truncated": false,
+    "elapsed_ms": 256
+   },
+   {
+    "id": "Q6",
+    "round": 2,
+    "purpose": "Daily breakdown of terminal attempts and success rate across the 2-week period",
+    "sql": "WITH valid_txn AS (SELECT * EXCLUDE (_rn) FROM (SELECT t.*, pm.method_code, CAST(t.created_at AS DATE) AS txn_date, row_number() OVER (PARTITION BY t.transaction_id ORDER BY t.updated_at DESC) AS _rn FROM transactions t JOIN payment_methods pm USING (payment_method_id)) WHERE _rn = 1 AND status IN ('SUCCESS', 'FAILED', 'USER_CANCELLED', 'PENDING') AND amount > 0 AND amount <= 1000000) SELECT txn_date, COUNT_IF(status IN ('SUCCESS','FAILED','USER_CANCELLED')) AS terminal_attempts, COUNT_IF(status = 'SUCCESS') AS success_count, ROUND(COUNT_IF(status = 'SUCCESS')::DOUBLE / NULLIF(COUNT_IF(status IN ('SUCCESS','FAILED','USER_CANCELLED')), 0), 4) AS success_rate, COUNT_IF(method_code = 'UPI') AS upi_attempts, ROUND(COUNT_IF(method_code = 'UPI')::DOUBLE / NULLIF(COUNT_IF(status IN ('SUCCESS','FAILED','USER_CANCELLED')), 0), 4) AS upi_share FROM valid_txn WHERE txn_date BETWEEN '2026-09-28' AND '2026-10-11' GROUP BY txn_date ORDER BY txn_date",
+    "status": "ok",
+    "error": null,
+    "columns": [
+     "txn_date",
+     "terminal_attempts",
+     "success_count",
+     "success_rate",
+     "upi_attempts",
+     "upi_share"
+    ],
+    "rows": [
+     [
+      "2026-09-28",
+      2179,
+      1966,
+      0.9022,
+      970,
+      0.4452
+     ],
+     [
+      "2026-09-29",
+      2116,
+      1945,
+      0.9192,
+      978,
+      0.4622
+     ],
+     [
+      "2026-09-30",
+      2389,
+      2161,
+      0.9046,
+      1073,
+      0.4491
+     ],
+     [
+      "2026-10-01",
+      2344,
+      2096,
+      0.8942,
+      1037,
+      0.4424
+     ],
+     [
+      "2026-10-02",
+      2498,
+      2267,
+      0.9075,
+      1104,
+      0.442
+     ],
+     [
+      "2026-10-03",
+      2762,
+      2519,
+      0.912,
+      1213,
+      0.4392
+     ],
+     [
+      "2026-10-04",
+      2314,
+      2103,
+      0.9088,
+      1085,
+      0.4689
+     ],
+     [
+      "2026-10-05",
+      3314,
+      2978,
+      0.8986,
+      2471,
+      0.7456
+     ],
+     [
+      "2026-10-06",
+      3047,
+      2712,
+      0.8901,
+      2253,
+      0.7394
+     ],
+     [
+      "2026-10-07",
+      3385,
+      3017,
+      0.8913,
+      2536,
+      0.7492
+     ],
+     [
+      "2026-10-08",
+      3539,
+      3159,
+      0.8926,
+      2646,
+      0.7477
+     ],
+     [
+      "2026-10-09",
+      3534,
+      3176,
+      0.8987,
+      2614,
+      0.7397
+     ],
+     [
+      "2026-10-10",
+      3931,
+      3473,
+      0.8835,
+      2907,
+      0.7395
+     ],
+     [
+      "2026-10-11",
+      3361,
+      3010,
+      0.8956,
+      2506,
+      0.7456
+     ]
+    ],
+    "row_count": 14,
+    "truncated": false,
+    "elapsed_ms": 238
+   },
+   {
+    "id": "Q7",
+    "round": 2,
+    "purpose": "Failure category and failure code breakdown by payment method for the week of 2026-10-05",
+    "sql": "WITH valid_txn AS (SELECT * EXCLUDE (_rn) FROM (SELECT t.*, pm.method_code, CAST(t.created_at AS DATE) AS txn_date, row_number() OVER (PARTITION BY t.transaction_id ORDER BY t.updated_at DESC) AS _rn FROM transactions t JOIN payment_methods pm USING (payment_method_id)) WHERE _rn = 1 AND status IN ('SUCCESS', 'FAILED', 'USER_CANCELLED', 'PENDING') AND amount > 0 AND amount <= 1000000) SELECT method_code, failure_code, fc.failure_category, fc.responsible_party, COUNT(*) AS failed_count FROM valid_txn t LEFT JOIN failure_codes fc ON t.failure_code = fc.failure_code WHERE t.status = 'FAILED' AND t.txn_date BETWEEN '2026-10-05' AND '2026-10-11' GROUP BY method_code, failure_code, fc.failure_category, fc.responsible_party ORDER BY failed_count DESC LIMIT 20",
+    "status": "error",
+    "error": "DuckDB error: BinderException: Binder Error: Ambiguous reference to column name \"failure_code\" (use: 't.failure_code' or 'fc.failure_code')",
+    "columns": [],
+    "rows": [],
+    "row_count": 0,
+    "truncated": false,
+    "elapsed_ms": 0
+   },
+   {
+    "id": "Q8",
+    "round": 2,
+    "purpose": "Data quality check for missing merchant_id, bank_id, or failure_codes in the 2-week period",
+    "sql": "WITH valid_txn AS (SELECT * EXCLUDE (_rn) FROM (SELECT t.*, pm.method_code, CAST(t.created_at AS DATE) AS txn_date, row_number() OVER (PARTITION BY t.transaction_id ORDER BY t.updated_at DESC) AS _rn FROM transactions t JOIN payment_methods pm USING (payment_method_id)) WHERE _rn = 1 AND status IN ('SUCCESS', 'FAILED', 'USER_CANCELLED', 'PENDING') AND amount > 0 AND amount <= 1000000) SELECT CASE WHEN txn_date BETWEEN '2026-09-28' AND '2026-10-04' THEN '2026-09-28 to 2026-10-04' ELSE '2026-10-05 to 2026-10-11' END AS period, COUNT(*) AS total_valid, COUNT_IF(merchant_id IS NULL) AS null_merchant, COUNT_IF(status = 'FAILED' AND failure_code IS NULL) AS failed_null_fc, COUNT_IF(method_code != 'WALLET' AND bank_id IS NULL) AS non_wallet_null_bank FROM valid_txn WHERE txn_date BETWEEN '2026-09-28' AND '2026-10-11' GROUP BY 1 ORDER BY 1",
+    "status": "ok",
+    "error": null,
+    "columns": [
+     "period",
+     "total_valid",
+     "null_merchant",
+     "failed_null_fc",
+     "non_wallet_null_bank"
+    ],
+    "rows": [
+     [
+      "2026-09-28 to 2026-10-04",
+      16640,
+      40,
+      58,
+      85
+     ],
+     [
+      "2026-10-05 to 2026-10-11",
+      24174,
+      46,
+      127,
+      102
+     ]
+    ],
+    "row_count": 2,
+    "truncated": false,
+    "elapsed_ms": 336
+   }
+  ],
+  "round_notes": [
+   "Starting investigation into why overall success rate fell in the week of 2026-10-05 compared to the previous week (2026-09-28 to 2026-10-04). Running driver_scan over these two 7-day windows alongside headline metrics and failure code breakdowns.",
+   "Analyzing the drivers of the SR fall from 90.69% to 89.27% (-1.42 pp). Driver scan Q1 shows UPI volume surged from 7,444 to 17,889 attempts, while UPI's own SR remained virtually unchanged (88.08% vs 88.05%). Running queries to quantify payment method mix shift vs rate shifts, daily trends, and failure code breakdowns by method.",
+   "Completed investigation into the success rate drop in the week of 2026-10-05. The primary driver is a negative payment method mix shift towards UPI (which has a lower baseline SR), while per-method success rates remained largely stable."
+  ],
+  "error": null,
+  "model": "gemini-3.6-flash",
+  "rounds": 3,
+  "input_tokens": 47912,
+  "output_tokens": 5552,
+  "elapsed_ms": 125953
+ }
+]

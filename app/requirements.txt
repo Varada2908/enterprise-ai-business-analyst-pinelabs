@@ -1,0 +1,6 @@
+# Frontend
+streamlit>=1.50
+plotly>=6.0
+pandas>=2.0
+# Backend (ai_analyst) - see ai_analyst/requirements.txt
+-r ../ai_analyst/requirements.txt

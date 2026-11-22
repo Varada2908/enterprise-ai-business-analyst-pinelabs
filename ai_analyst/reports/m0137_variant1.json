@@ -1,0 +1,1034 @@
+[
+ {
+  "question": "Our success rate in the last two weeks looks worse than the two weeks before. What changed?",
+  "success": true,
+  "answer": "The drop in success rate over the last two weeks is primarily driven by a sharp performance degradation for merchant M0137 (Zestora Online Mart) on Android. Specifically, M0137 experienced a massive surge in gateway-related failures, notably GATEWAY_ERROR and GATEWAY_TIMEOUT, starting around October 12, 2026.",
+  "findings": [
+   {
+    "statement": "Merchant M0137 (Zestora Online Mart) had its success rate drop from 0.8945 in the baseline period (1,166 attempts) to 0.7310 in the current period (1,104 attempts), explaining 0.556 pp of the overall SR drop.",
+    "evidence": [
+     "Q1"
+    ],
+    "numbers_verified": [
+     "0.8945",
+     "1,166",
+     "0.7310",
+     "1,104",
+     "0.556 pp"
+    ],
+    "numbers_unverified": []
+   },
+   {
+    "statement": "The M0137 / ANDROID segment saw its success rate drop from 0.8907 to 0.6205, accounting for 174 excess unsuccessful attempts.",
+    "evidence": [
+     "Q1"
+    ],
+    "numbers_verified": [
+     "0.8907",
+     "0.6205",
+     "174"
+    ],
+    "numbers_unverified": []
+   },
+   {
+    "statement": "GATEWAY_ERROR failures increased from 185 (0.454% of attempts) in the baseline period to 298 (0.918%) in the current period, with M0137 / ANDROID contributing 142 of those in the current period.",
+    "evidence": [
+     "Q2"
+    ],
+    "numbers_verified": [
+     "185",
+     "0.454%",
+     "298",
+     "0.918%",
+     "142"
+    ],
+    "numbers_unverified": []
+   },
+   {
+    "statement": "GATEWAY_TIMEOUT failures rose from 0 in the baseline period to 33 in the current period, with M0137 / ANDROID accounting for all 33.",
+    "evidence": [
+     "Q2"
+    ],
+    "numbers_verified": [
+     "33",
+     "33"
+    ],
+    "numbers_unverified": []
+   },
+   {
+    "statement": "For merchant M0137, GATEWAY_ERROR failure count jumped from 5 in the baseline period to 147 in the current period, and GATEWAY_TIMEOUT went from 0 to 33.",
+    "evidence": [
+     "Q4"
+    ],
+    "numbers_verified": [
+     "147",
+     "33"
+    ],
+    "numbers_unverified": []
+   }
+  ],
+  "hypotheses": [
+   {
+    "statement": "Merchant M0137 deployed an app update or changed their payment gateway integration on or around October 12, 2026, causing gateway timeouts and errors.",
+    "rationale": "The timing is a sharp step change right on October 12, heavily concentrated on Android and specific gateway error codes.",
+    "supporting_evidence": [
+     "Q3",
+     "Q4"
+    ],
+    "how_to_verify": "Check M0137's client release logs or server-side integration changes around October 12.",
+    "demoted_from_finding": false
+   }
+  ],
+  "caveats": [
+   "Some FAILED transactions lack a failure_code, though the gateway errors and timeouts are well-captured."
+  ],
+  "suggested_follow_ups": [
+   "Contact merchant M0137 technical support regarding recent Android app releases or gateway configurations.",
+   "Inspect gateway-level logs for M0137 to determine if timeouts are originating from upstream acquirers or internal routing."
+  ],
+  "queries": [
+   {
+    "id": "Q1",
+    "round": 1,
+    "purpose": "[driver scan] segments ranked by impact on SR change (2026-09-28..2026-10-11 vs 2026-10-12..2026-10-25)",
+    "sql": "WITH valid_txn AS (\n    SELECT * EXCLUDE (_rn)\n    FROM (\n        SELECT t.*, pm.method_code,\n               CAST(t.created_at AS DATE) AS txn_date,\n               row_number() OVER (PARTITION BY t.transaction_id ORDER BY t.updated_at DESC) AS _rn\n        FROM transactions t\n        JOIN payment_methods pm USING (payment_method_id)\n    )\n    WHERE _rn = 1\n      AND status IN ('SUCCESS', 'FAILED', 'USER_CANCELLED', 'PENDING')\n      AND amount > 0 AND amount <= 1000000\n),\nbase AS (\n    SELECT v.*, b.short_name AS bank, m.merchant_name, m.category AS merchant_category,\n           CASE WHEN v.txn_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-25' THEN 'cur'\n                WHEN v.txn_date BETWEEN DATE '2026-09-28' AND DATE '2026-10-11' THEN 'base' END AS period\n    FROM valid_txn v\n    LEFT JOIN banks b ON v.bank_id = b.bank_id\n    LEFT JOIN merchants m ON v.merchant_id = m.merchant_id\n    WHERE v.status IN ('SUCCESS', 'FAILED', 'USER_CANCELLED') \n),\nseg AS (\n    SELECT 'merchant' AS dimension, coalesce(merchant_id, '(none)') || coalesce(' ' || merchant_name, '') AS segment, period, count(*) AS n, count_if(status = 'SUCCESS') AS s FROM base WHERE period IS NOT NULL GROUP BY ALL\n    UNION ALL\n    SELECT 'device_platform' AS dimension, device_platform AS segment, period, count(*) AS n, count_if(status = 'SUCCESS') AS s FROM base WHERE period IS NOT NULL GROUP BY ALL\n    UNION ALL\n    SELECT 'merchant x platform' AS dimension, coalesce(merchant_id, '(none)') || ' / ' || device_platform AS segment, period, count(*) AS n, count_if(status = 'SUCCESS') AS s FROM base WHERE period IS NOT NULL GROUP BY ALL\n    UNION ALL\n    SELECT 'payment_method' AS dimension, method_code AS segment, period, count(*) AS n, count_if(status = 'SUCCESS') AS s FROM base WHERE period IS NOT NULL GROUP BY ALL\n    UNION ALL\n    SELECT 'issuing_bank' AS dimension, coalesce(bank, '(none)') AS segment, period, count(*) AS n, count_if(status = 'SUCCESS') AS s FROM base WHERE period IS NOT NULL GROUP BY ALL\n    UNION ALL\n    SELECT 'bank x method' AS dimension, coalesce(bank, '(none)') || ' / ' || method_code AS segment, period, count(*) AS n, count_if(status = 'SUCCESS') AS s FROM base WHERE period IS NOT NULL GROUP BY ALL\n    UNION ALL\n    SELECT 'merchant_category' AS dimension, coalesce(merchant_category, '(none)') AS segment, period, count(*) AS n, count_if(status = 'SUCCESS') AS s FROM base WHERE period IS NOT NULL GROUP BY ALL\n    UNION ALL\n    SELECT 'channel' AS dimension, channel AS segment, period, count(*) AS n, count_if(status = 'SUCCESS') AS s FROM base WHERE period IS NOT NULL GROUP BY ALL\n),\npiv AS (\n    SELECT dimension, segment,\n           coalesce(sum(n) FILTER (WHERE period = 'base'), 0) AS n_base,\n           coalesce(sum(s) FILTER (WHERE period = 'base'), 0) AS s_base,\n           coalesce(sum(n) FILTER (WHERE period = 'cur'), 0) AS n_cur,\n           coalesce(sum(s) FILTER (WHERE period = 'cur'), 0) AS s_cur\n    FROM seg GROUP BY dimension, segment\n),\ntot AS (SELECT count_if(period = 'cur') AS total_cur FROM base),\nscored AS (\n    SELECT dimension, segment, n_base, round(s_base::DOUBLE / n_base, 4) AS sr_baseline,\n           n_cur, round(s_cur::DOUBLE / n_cur, 4) AS sr_current,\n           round(s_cur::DOUBLE / n_cur - s_base::DOUBLE / n_base, 4) AS sr_change,\n           round(n_cur::DOUBLE / total_cur * (s_cur::DOUBLE / n_cur - s_base::DOUBLE / n_base) * 100, 3) AS impact_on_overall_sr_pp,\n           round((s_base::DOUBLE / n_base - s_cur::DOUBLE / n_cur) * n_cur) AS excess_unsuccessful_attempts\n    FROM piv CROSS JOIN tot\n    WHERE n_base >= 100 AND n_cur >= 100\n)\nSELECT * FROM scored\nQUALIFY row_number() OVER (PARTITION BY dimension ORDER BY impact_on_overall_sr_pp ASC) <= 4\nORDER BY impact_on_overall_sr_pp ASC\nLIMIT 40",
+    "status": "ok",
+    "error": null,
+    "columns": [
+     "dimension",
+     "segment",
+     "n_base",
+     "sr_baseline",
+     "n_cur",
+     "sr_current",
+     "sr_change",
+     "impact_on_overall_sr_pp",
+     "excess_unsuccessful_attempts"
+    ],
+    "rows": [
+     [
+      "merchant",
+      "M0137 Zestora Online Mart",
+      1166,
+      0.8945,
+      1104,
+      0.731,
+      -0.1635,
+      -0.556,
+      181.0
+     ],
+     [
+      "merchant x platform",
+      "M0137 / ANDROID",
+      622,
+      0.8907,
+      643,
+      0.6205,
+      -0.2701,
+      -0.535,
+      174.0
+     ],
+     [
+      "payment_method",
+      "UPI",
+      25333,
+      0.8806,
+      14811,
+      0.8702,
+      -0.0104,
+      -0.476,
+      154.0
+     ],
+     [
+      "merchant_category",
+      "ECOMMERCE",
+      7218,
+      0.8904,
+      5755,
+      0.8636,
+      -0.0268,
+      -0.475,
+      154.0
+     ],
+     [
+      "channel",
+      "ONLINE",
+      23137,
+      0.8894,
+      18490,
+      0.8819,
+      -0.0076,
+      -0.43,
+      140.0
+     ],
+     [
+      "device_platform",
+      "ANDROID",
+      12711,
+      0.8885,
+      10198,
+      0.8769,
+      -0.0116,
+      -0.364,
+      118.0
+     ],
+     [
+      "issuing_bank",
+      "SBI",
+      8587,
+      0.8951,
+      6507,
+      0.8787,
+      -0.0163,
+      -0.327,
+      106.0
+     ],
+     [
+      "bank x method",
+      "SBI / UPI",
+      5900,
+      0.8815,
+      3374,
+      0.8577,
+      -0.0238,
+      -0.247,
+      80.0
+     ],
+     [
+      "payment_method",
+      "NET_BANKING",
+      1956,
+      0.8569,
+      2258,
+      0.8295,
+      -0.0274,
+      -0.19,
+      62.0
+     ],
+     [
+      "payment_method",
+      "CREDIT_CARD",
+      5528,
+      0.9474,
+      6495,
+      0.9404,
+      -0.0069,
+      -0.139,
+      45.0
+     ],
+     [
+      "bank x method",
+      "SBI / DEBIT_CARD",
+      1267,
+      0.9361,
+      1478,
+      0.91,
+      -0.0261,
+      -0.119,
+      39.0
+     ],
+     [
+      "bank x method",
+      "ICICI / UPI",
+      3492,
+      0.8958,
+      2145,
+      0.8844,
+      -0.0114,
+      -0.075,
+      24.0
+     ],
+     [
+      "bank x method",
+      "AXIS / UPI",
+      2225,
+      0.8885,
+      1346,
+      0.8707,
+      -0.0178,
+      -0.074,
+      24.0
+     ],
+     [
+      "device_platform",
+      "DESKTOP_WEB",
+      2885,
+      0.8984,
+      2101,
+      0.8886,
+      -0.0098,
+      -0.064,
+      21.0
+     ],
+     [
+      "payment_method",
+      "DEBIT_CARD",
+      5707,
+      0.931,
+      6467,
+      0.9286,
+      -0.0024,
+      -0.048,
+      16.0
+     ],
+     [
+      "issuing_bank",
+      "ICICI",
+      5654,
+      0.913,
+      4660,
+      0.9099,
+      -0.0031,
+      -0.045,
+      14.0
+     ],
+     [
+      "issuing_bank",
+      "AU",
+      534,
+      0.8895,
+      394,
+      0.8528,
+      -0.0367,
+      -0.045,
+      14.0
+     ],
+     [
+      "merchant x platform",
+      "M0200 / POS_TERMINAL",
+      122,
+      0.9426,
+      122,
+      0.8525,
+      -0.0902,
+      -0.034,
+      11.0
+     ],
+     [
+      "merchant",
+      "M0200 Jharokha Cafe",
+      122,
+      0.9426,
+      122,
+      0.8525,
+      -0.0902,
+      -0.034,
+      11.0
+     ],
+     [
+      "merchant",
+      "M0172 Amber Electronics",
+      412,
+      0.9345,
+      323,
+      0.9071,
+      -0.0273,
+      -0.027,
+      9.0
+     ],
+     [
+      "issuing_bank",
+      "AIRTEL",
+      348,
+      0.8822,
+      254,
+      0.8504,
+      -0.0318,
+      -0.025,
+      8.0
+     ],
+     [
+      "merchant",
+      "M0027 Riverbend Threads",
+      301,
+      0.9103,
+      238,
+      0.8782,
+      -0.0321,
+      -0.024,
+      8.0
+     ],
+     [
+      "device_platform",
+      "MOBILE_WEB",
+      3408,
+      0.8768,
+      2729,
+      0.8739,
+      -0.0028,
+      -0.024,
+      8.0
+     ],
+     [
+      "merchant x platform",
+      "M0027 / ANDROID",
+      166,
+      0.9157,
+      130,
+      0.8615,
+      -0.0541,
+      -0.022,
+      7.0
+     ],
+     [
+      "merchant x platform",
+      "M0175 / ANDROID",
+      306,
+      0.8889,
+      245,
+      0.8612,
+      -0.0277,
+      -0.021,
+      7.0
+     ],
+     [
+      "merchant_category",
+      "HOTELS",
+      991,
+      0.9092,
+      795,
+      0.9006,
+      -0.0086,
+      -0.021,
+      7.0
+     ],
+     [
+      "merchant_category",
+      "RESTAURANTS",
+      5679,
+      0.9081,
+      4587,
+      0.9071,
+      -0.001,
+      -0.013,
+      4.0
+     ],
+     [
+      "merchant_category",
+      "JEWELLERY",
+      303,
+      0.9241,
+      245,
+      0.9143,
+      -0.0098,
+      -0.007,
+      2.0
+     ],
+     [
+      "device_platform",
+      "IOS",
+      4133,
+      0.8964,
+      3462,
+      0.8986,
+      0.0022,
+      0.023,
+      -8.0
+     ],
+     [
+      "channel",
+      "POS",
+      17576,
+      0.9105,
+      13982,
+      0.9185,
+      0.008,
+      0.346,
+      -112.0
+     ]
+    ],
+    "row_count": 30,
+    "truncated": false,
+    "elapsed_ms": 163
+   },
+   {
+    "id": "Q2",
+    "round": 1,
+    "purpose": "[driver scan] failure-reason shift (2026-09-28..2026-10-11 vs 2026-10-12..2026-10-25)",
+    "sql": "WITH valid_txn AS (\n    SELECT * EXCLUDE (_rn)\n    FROM (\n        SELECT t.*, pm.method_code,\n               CAST(t.created_at AS DATE) AS txn_date,\n               row_number() OVER (PARTITION BY t.transaction_id ORDER BY t.updated_at DESC) AS _rn\n        FROM transactions t\n        JOIN payment_methods pm USING (payment_method_id)\n    )\n    WHERE _rn = 1\n      AND status IN ('SUCCESS', 'FAILED', 'USER_CANCELLED', 'PENDING')\n      AND amount > 0 AND amount <= 1000000\n),\nbase AS (\n    SELECT v.*, b.short_name AS bank, m.merchant_name, m.category AS merchant_category,\n           CASE WHEN v.txn_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-25' THEN 'cur'\n                WHEN v.txn_date BETWEEN DATE '2026-09-28' AND DATE '2026-10-11' THEN 'base' END AS period\n    FROM valid_txn v\n    LEFT JOIN banks b ON v.bank_id = b.bank_id\n    LEFT JOIN merchants m ON v.merchant_id = m.merchant_id\n    WHERE v.status IN ('SUCCESS', 'FAILED', 'USER_CANCELLED') \n),\nfc AS (\n    SELECT coalesce(failure_code, '(missing)') AS failure_code,\n           count_if(period = 'base' AND status = 'FAILED') AS failed_base,\n           count_if(period = 'cur' AND status = 'FAILED') AS failed_cur\n    FROM base WHERE period IS NOT NULL GROUP BY 1\n),\ntot AS (SELECT count_if(period = 'base') AS n_base, count_if(period = 'cur') AS n_cur FROM base),\nseg_fail AS (\n    SELECT coalesce(failure_code, '(missing)') AS failure_code,\n           coalesce(merchant_id, '(none)') || ' / ' || device_platform AS segment, count(*) AS n\n    FROM base WHERE period = 'cur' AND status = 'FAILED' GROUP BY 1, 2\n),\ntop_seg AS (\n    SELECT * FROM seg_fail\n    QUALIFY row_number() OVER (PARTITION BY failure_code ORDER BY n DESC, segment) = 1\n)\nSELECT fc.failure_code, failed_base, round(failed_base::DOUBLE / n_base * 100, 3) AS pct_of_attempts_base,\n       failed_cur, round(failed_cur::DOUBLE / n_cur * 100, 3) AS pct_of_attempts_cur,\n       round((failed_cur::DOUBLE / n_cur - failed_base::DOUBLE / n_base) * 100, 3) AS change_pp,\n       top_seg.segment AS top_merchant_platform_cur, top_seg.n AS top_segment_failed_cur\nFROM fc CROSS JOIN tot LEFT JOIN top_seg ON fc.failure_code = top_seg.failure_code\nORDER BY change_pp DESC",
+    "status": "ok",
+    "error": null,
+    "columns": [
+     "failure_code",
+     "failed_base",
+     "pct_of_attempts_base",
+     "failed_cur",
+     "pct_of_attempts_cur",
+     "change_pp",
+     "top_merchant_platform_cur",
+     "top_segment_failed_cur"
+    ],
+    "rows": [
+     [
+      "GATEWAY_ERROR",
+      185,
+      0.454,
+      298,
+      0.918,
+      0.463,
+      "M0137 / ANDROID",
+      142
+     ],
+     [
+      "AUTH_FAILED",
+      181,
+      0.445,
+      230,
+      0.708,
+      0.264,
+      "M0248 / POS_TERMINAL",
+      6
+     ],
+     [
+      "GATEWAY_TIMEOUT",
+      0,
+      0.0,
+      33,
+      0.102,
+      0.102,
+      "M0137 / ANDROID",
+      33
+     ],
+     [
+      "CARD_EXPIRED",
+      18,
+      0.044,
+      27,
+      0.083,
+      0.039,
+      "M0237 / POS_TERMINAL",
+      3
+     ],
+     [
+      "(missing)",
+      185,
+      0.454,
+      148,
+      0.456,
+      0.001,
+      "M0137 / ANDROID",
+      20
+     ],
+     [
+      "BANK_TIMEOUT",
+      342,
+      0.84,
+      262,
+      0.807,
+      -0.033,
+      "M0137 / ANDROID",
+      5
+     ],
+     [
+      "ISSUER_UNAVAILABLE",
+      152,
+      0.373,
+      110,
+      0.339,
+      -0.035,
+      "M0030 / ANDROID",
+      3
+     ],
+     [
+      "RISK_DECLINED",
+      146,
+      0.359,
+      102,
+      0.314,
+      -0.044,
+      "M0175 / ANDROID",
+      5
+     ],
+     [
+      "INCORRECT_PIN",
+      452,
+      1.11,
+      327,
+      1.007,
+      -0.103,
+      "M0045 / ANDROID",
+      8
+     ],
+     [
+      "LIMIT_EXCEEDED",
+      242,
+      0.594,
+      155,
+      0.477,
+      -0.117,
+      "M0045 / ANDROID",
+      4
+     ],
+     [
+      "INVALID_VPA",
+      142,
+      0.349,
+      75,
+      0.231,
+      -0.118,
+      "M0248 / POS_TERMINAL",
+      3
+     ],
+     [
+      "BANK_DECLINED",
+      305,
+      0.749,
+      200,
+      0.616,
+      -0.133,
+      "M0218 / POS_TERMINAL",
+      5
+     ],
+     [
+      "INSUFFICIENT_FUNDS",
+      623,
+      1.53,
+      453,
+      1.395,
+      -0.135,
+      "M0003 / ANDROID",
+      10
+     ],
+     [
+      "NETWORK_ERROR",
+      175,
+      0.43,
+      88,
+      0.271,
+      -0.159,
+      "M0175 / POS_TERMINAL",
+      4
+     ]
+    ],
+    "row_count": 14,
+    "truncated": false,
+    "elapsed_ms": 87
+   },
+   {
+    "id": "Q3",
+    "round": 2,
+    "purpose": "Daily success rate and failure count for merchant M0137 around the date change",
+    "sql": "WITH valid_txn AS (SELECT * EXCLUDE (_rn) FROM (SELECT t.*, pm.method_code, CAST(t.created_at AS DATE) AS txn_date, row_number() OVER (PARTITION BY t.transaction_id ORDER BY t.updated_at DESC) AS _rn FROM transactions t JOIN payment_methods pm USING (payment_method_id)) WHERE _rn = 1 AND status IN ('SUCCESS', 'FAILED', 'USER_CANCELLED', 'PENDING') AND amount > 0 AND amount <= 1000000) SELECT txn_date, count_if(status IN ('SUCCESS', 'FAILED', 'USER_CANCELLED')) AS terminal_attempts, count_if(status = 'SUCCESS') AS success_count, round(success_count::DOUBLE / NULLIF(terminal_attempts, 0), 4) AS success_rate FROM valid_txn WHERE merchant_id = 'M0137' AND txn_date >= DATE '2026-09-14' AND txn_date <= DATE '2026-10-25' GROUP BY 1 ORDER BY 1",
+    "status": "ok",
+    "error": null,
+    "columns": [
+     "txn_date",
+     "terminal_attempts",
+     "success_count",
+     "success_rate"
+    ],
+    "rows": [
+     [
+      "2026-09-14",
+      74,
+      61,
+      0.8243
+     ],
+     [
+      "2026-09-15",
+      75,
+      60,
+      0.8
+     ],
+     [
+      "2026-09-16",
+      64,
+      61,
+      0.9531
+     ],
+     [
+      "2026-09-17",
+      70,
+      61,
+      0.8714
+     ],
+     [
+      "2026-09-18",
+      72,
+      63,
+      0.875
+     ],
+     [
+      "2026-09-19",
+      66,
+      61,
+      0.9242
+     ],
+     [
+      "2026-09-20",
+      57,
+      52,
+      0.9123
+     ],
+     [
+      "2026-09-21",
+      76,
+      68,
+      0.8947
+     ],
+     [
+      "2026-09-22",
+      73,
+      65,
+      0.8904
+     ],
+     [
+      "2026-09-23",
+      77,
+      69,
+      0.8961
+     ],
+     [
+      "2026-09-24",
+      66,
+      57,
+      0.8636
+     ],
+     [
+      "2026-09-25",
+      83,
+      80,
+      0.9639
+     ],
+     [
+      "2026-09-26",
+      77,
+      72,
+      0.9351
+     ],
+     [
+      "2026-09-27",
+      66,
+      57,
+      0.8636
+     ],
+     [
+      "2026-09-28",
+      71,
+      66,
+      0.9296
+     ],
+     [
+      "2026-09-29",
+      57,
+      54,
+      0.9474
+     ],
+     [
+      "2026-09-30",
+      66,
+      57,
+      0.8636
+     ],
+     [
+      "2026-10-01",
+      61,
+      56,
+      0.918
+     ],
+     [
+      "2026-10-02",
+      70,
+      62,
+      0.8857
+     ],
+     [
+      "2026-10-03",
+      107,
+      99,
+      0.9252
+     ],
+     [
+      "2026-10-04",
+      65,
+      59,
+      0.9077
+     ],
+     [
+      "2026-10-05",
+      90,
+      76,
+      0.8444
+     ],
+     [
+      "2026-10-06",
+      81,
+      74,
+      0.9136
+     ],
+     [
+      "2026-10-07",
+      85,
+      78,
+      0.9176
+     ],
+     [
+      "2026-10-08",
+      88,
+      77,
+      0.875
+     ],
+     [
+      "2026-10-09",
+      100,
+      85,
+      0.85
+     ],
+     [
+      "2026-10-10",
+      132,
+      116,
+      0.8788
+     ],
+     [
+      "2026-10-11",
+      93,
+      84,
+      0.9032
+     ],
+     [
+      "2026-10-12",
+      76,
+      55,
+      0.7237
+     ],
+     [
+      "2026-10-13",
+      73,
+      52,
+      0.7123
+     ],
+     [
+      "2026-10-14",
+      89,
+      62,
+      0.6966
+     ],
+     [
+      "2026-10-15",
+      73,
+      57,
+      0.7808
+     ],
+     [
+      "2026-10-16",
+      88,
+      61,
+      0.6932
+     ],
+     [
+      "2026-10-17",
+      78,
+      62,
+      0.7949
+     ],
+     [
+      "2026-10-18",
+      76,
+      51,
+      0.6711
+     ],
+     [
+      "2026-10-19",
+      87,
+      64,
+      0.7356
+     ],
+     [
+      "2026-10-20",
+      94,
+      64,
+      0.6809
+     ],
+     [
+      "2026-10-21",
+      68,
+      56,
+      0.8235
+     ],
+     [
+      "2026-10-22",
+      73,
+      46,
+      0.6301
+     ],
+     [
+      "2026-10-23",
+      79,
+      54,
+      0.6835
+     ],
+     [
+      "2026-10-24",
+      85,
+      72,
+      0.8471
+     ],
+     [
+      "2026-10-25",
+      65,
+      51,
+      0.7846
+     ]
+    ],
+    "row_count": 42,
+    "truncated": false,
+    "elapsed_ms": 52
+   },
+   {
+    "id": "Q4",
+    "round": 2,
+    "purpose": "Failure codes for merchant M0137 comparing baseline vs current period",
+    "sql": "WITH valid_txn AS (SELECT * EXCLUDE (_rn) FROM (SELECT t.*, pm.method_code, CAST(t.created_at AS DATE) AS txn_date, row_number() OVER (PARTITION BY t.transaction_id ORDER BY t.updated_at DESC) AS _rn FROM transactions t JOIN payment_methods pm USING (payment_method_id)) WHERE _rn = 1 AND status IN ('SUCCESS', 'FAILED', 'USER_CANCELLED', 'PENDING') AND amount > 0 AND amount <= 1000000) SELECT CASE WHEN txn_date BETWEEN DATE '2026-09-28' AND DATE '2026-10-11' THEN 'baseline' WHEN txn_date BETWEEN DATE '2026-10-12' AND DATE '2026-10-25' THEN 'current' ELSE 'other' END AS period, failure_code, count(*) AS failure_count FROM valid_txn WHERE merchant_id = 'M0137' AND status = 'FAILED' AND txn_date >= DATE '2026-09-28' AND txn_date <= DATE '2026-10-25' GROUP BY 1, 2 ORDER BY 1, 3 DESC",
+    "status": "ok",
+    "error": null,
+    "columns": [
+     "period",
+     "failure_code",
+     "failure_count"
+    ],
+    "rows": [
+     [
+      "baseline",
+      "INSUFFICIENT_FUNDS",
+      28
+     ],
+     [
+      "baseline",
+      "BANK_DECLINED",
+      15
+     ],
+     [
+      "baseline",
+      "INCORRECT_PIN",
+      13
+     ],
+     [
+      "baseline",
+      "BANK_TIMEOUT",
+      8
+     ],
+     [
+      "baseline",
+      "ISSUER_UNAVAILABLE",
+      6
+     ],
+     [
+      "baseline",
+      null,
+      6
+     ],
+     [
+      "baseline",
+      "RISK_DECLINED",
+      5
+     ],
+     [
+      "baseline",
+      "GATEWAY_ERROR",
+      5
+     ],
+     [
+      "baseline",
+      "LIMIT_EXCEEDED",
+      4
+     ],
+     [
+      "baseline",
+      "INVALID_VPA",
+      3
+     ],
+     [
+      "baseline",
+      "NETWORK_ERROR",
+      3
+     ],
+     [
+      "baseline",
+      "AUTH_FAILED",
+      1
+     ],
+     [
+      "current",
+      "GATEWAY_ERROR",
+      147
+     ],
+     [
+      "current",
+      "GATEWAY_TIMEOUT",
+      33
+     ],
+     [
+      "current",
+      "INSUFFICIENT_FUNDS",
+      21
+     ],
+     [
+      "current",
+      null,
+      21
+     ],
+     [
+      "current",
+      "INCORRECT_PIN",
+      9
+     ],
+     [
+      "current",
+      "BANK_DECLINED",
+      9
+     ],
+     [
+      "current",
+      "BANK_TIMEOUT",
+      8
+     ],
+     [
+      "current",
+      "AUTH_FAILED",
+      5
+     ],
+     [
+      "current",
+      "LIMIT_EXCEEDED",
+      5
+     ],
+     [
+      "current",
+      "ISSUER_UNAVAILABLE",
+      3
+     ],
+     [
+      "current",
+      "NETWORK_ERROR",
+      2
+     ],
+     [
+      "current",
+      "INVALID_VPA",
+      2
+     ],
+     [
+      "current",
+      "RISK_DECLINED",
+      2
+     ]
+    ],
+    "row_count": 25,
+    "truncated": false,
+    "elapsed_ms": 56
+   }
+  ],
+  "round_notes": [
+   "We need to investigate the success rate drop over the last two weeks compared to the two weeks before. Let's request a driver scan comparing the last 14 days (2026-10-12 to 2026-10-25) to the preceding 14 days (2026-09-28 to 2026-10-11).",
+   "We see a prominent drop in overall success rate driven largely by merchant M0137 (Zestora Online Mart) on Android, and specifically associated with an increase in GATEWAY_ERROR and GATEWAY_TIMEOUT failure codes. Let's run queries to confirm the daily trend for M0137 and the exact distribution of failure codes for M0137 over time.",
+   "We have sufficient evidence to answer the question. The drop in success rate in the last two weeks (2026-10-12 to 2026-10-25) compared to the preceding two weeks is primarily driven by merchant M0137 (Zestora Online Mart) on Android, which suffered a major surge in GATEWAY_ERROR (147 failures) and GATEWAY_TIMEOUT (33 failures)."
+  ],
+  "error": null,
+  "model": "gemini-3.5-flash-lite",
+  "rounds": 3,
+  "input_tokens": 24044,
+  "output_tokens": 1819,
+  "elapsed_ms": 11102
+ }
+]

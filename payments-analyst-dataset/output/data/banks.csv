@@ -1,0 +1,15 @@
+bank_id,bank_name,short_name,bank_type,ifsc_prefix,supports_upi,supports_credit_card,supports_debit_card,supports_net_banking,is_active
+BNK001,State Bank of India,SBI,PUBLIC_SECTOR,SBIN,true,true,true,true,true
+BNK002,HDFC Bank,HDFC,PRIVATE_SECTOR,HDFC,true,true,true,true,true
+BNK003,ICICI Bank,ICICI,PRIVATE_SECTOR,ICIC,true,true,true,true,true
+BNK004,Axis Bank,AXIS,PRIVATE_SECTOR,UTIB,true,true,true,true,true
+BNK005,Kotak Mahindra Bank,KOTAK,PRIVATE_SECTOR,KKBK,true,true,true,true,true
+BNK006,Punjab National Bank,PNB,PUBLIC_SECTOR,PUNB,true,true,true,true,true
+BNK007,Bank of Baroda,BOB,PUBLIC_SECTOR,BARB,true,true,true,true,true
+BNK008,Canara Bank,CANARA,PUBLIC_SECTOR,CNRB,true,true,true,true,true
+BNK009,Union Bank of India,UNION,PUBLIC_SECTOR,UBIN,true,true,true,true,true
+BNK010,IndusInd Bank,INDUSIND,PRIVATE_SECTOR,INDB,true,true,true,true,true
+BNK011,IDFC FIRST Bank,IDFCFIRST,PRIVATE_SECTOR,IDFB,true,true,true,true,true
+BNK012,Yes Bank,YES,PRIVATE_SECTOR,YESB,true,true,true,true,true
+BNK013,AU Small Finance Bank,AU,SMALL_FINANCE,AUBL,true,true,true,true,true
+BNK014,Airtel Payments Bank,AIRTEL,PAYMENTS_BANK,AIRP,true,false,true,true,true

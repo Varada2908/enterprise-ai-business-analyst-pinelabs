@@ -1,0 +1,6 @@
+payment_method_id,method_code,method_name,method_family,mdr_rate_pct,requires_issuing_bank,supported_channels
+PM01,UPI,Unified Payments Interface,UPI,0.00,true,"ONLINE,POS"
+PM02,CREDIT_CARD,Credit Card,CARD,1.80,true,"ONLINE,POS"
+PM03,DEBIT_CARD,Debit Card,CARD,0.40,true,"ONLINE,POS"
+PM04,NET_BANKING,Net Banking,BANK_TRANSFER,1.50,true,ONLINE
+PM05,WALLET,Prepaid Wallet,WALLET,1.25,false,ONLINE

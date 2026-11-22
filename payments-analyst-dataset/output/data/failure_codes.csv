@@ -1,0 +1,14 @@
+failure_code,description,failure_category,is_retriable,responsible_party
+INCORRECT_PIN,Customer entered a wrong UPI PIN / card PIN,CUSTOMER,true,CUSTOMER
+AUTH_FAILED,OTP / 3-D Secure / net-banking login authentication failed,CUSTOMER,true,CUSTOMER
+INSUFFICIENT_FUNDS,Insufficient balance or available credit limit,CUSTOMER,true,CUSTOMER
+CARD_EXPIRED,Card expired,CUSTOMER,false,CUSTOMER
+INVALID_VPA,UPI virtual payment address invalid or not found,CUSTOMER,true,CUSTOMER
+LIMIT_EXCEEDED,Per-transaction or daily limit exceeded,CUSTOMER,false,CUSTOMER
+BANK_DECLINED,Issuing bank declined the transaction,BANK,false,ISSUING_BANK
+BANK_TIMEOUT,No response from issuing bank within SLA (30s),BANK,true,ISSUING_BANK
+ISSUER_UNAVAILABLE,Issuing bank systems unavailable,BANK,true,ISSUING_BANK
+NETWORK_ERROR,Switch / network (NPCI or card network) error,NETWORK,true,NETWORK
+GATEWAY_ERROR,Payment gateway processing error,GATEWAY,true,PAYMENT_GATEWAY
+GATEWAY_TIMEOUT,Payment gateway timed out before routing,GATEWAY,true,PAYMENT_GATEWAY
+RISK_DECLINED,Blocked by fraud / risk rules,RISK,false,RISK_ENGINE

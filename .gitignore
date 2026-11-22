@@ -1,0 +1,40 @@
+# secrets: never commit real credentials
+.env
+.env.*
+*.env
+!.env.example
+.streamlit/secrets.toml
+
+# evaluator-only material (never part of this repository)
+payments-analyst-dataset/output/eval/
+
+# Python / tooling caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# virtual environments
+.venv/
+venv/
+env/
+
+# local temporary files and logs
+*.log
+*.tmp
+*.bak
+*~
+
+# local editor / assistant settings
+.claude/
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
