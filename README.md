@@ -189,7 +189,9 @@ ai_analyst/                 backend (no UI); reports/ holds sample investigation
 app/                        Streamlit app: streamlit_app.py, views/, components/, services/, assets/, tests/
 payments-analyst-dataset/   prebuilt synthetic data (DuckDB + CSV) and the analyst-facing data catalog
 ```
+### Dashboard Screenshots
 
+View the dashboard screenshots at [link](https://drive.google.com/drive/folders/1gMNAGWFHr_Vgr4J7-PRQFD6xQe5nVCL1?usp=drive_link).
 ## Security
 
 * The Gemini key is read from `ai_analyst/.env` or the environment and is never logged or shown in the UI.
